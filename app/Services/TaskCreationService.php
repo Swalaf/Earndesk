@@ -1,0 +1,591 @@
+<?php
+
+namespace App\Services;
+
+use App\Jobs\ProcessTaskCreation;
+use App\Models\Task;
+use App\Models\TaskCategory;
+use App\Models\TaskCreationLog;
+use App\Models\User;
+use App\Notifications\TaskApproved;
+use App\Repositories\TaskRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Service Layer for Task Creation operations.
+ * Handles all business logic for creating tasks with idempotency, 
+ * validation, and transaction safety.
+ */
+class TaskCreationService
+{
+    /**
+     * @var TaskRepository
+     */
+    private $taskRepository;
+
+    /**
+     * @var EarnDeskService
+     */
+    private $earnDeskService;
+
+    /**
+     * Create a new service instance.
+     *
+     * @param TaskRepository $taskRepository
+     * @param EarnDeskService $earnDeskService
+     */
+    public function __construct(
+        TaskRepository $taskRepository,
+        EarnDeskService $earnDeskService
+    ) {
+        $this->taskRepository = $taskRepository;
+        $this->earnDeskService = $earnDeskService;
+    }
+
+    /**
+     * Create a new task with full validation and idempotency handling.
+     *
+     * @param User $user
+     * @param array $data
+     * @param string $idempotencyToken
+     * @param Request $request
+     * @return array{task: Task|null, success: bool, message: string, status: int}
+     */
+    public function createTask(
+        User $user,
+        array $data,
+        string $idempotencyToken,
+        Request $request
+    ): array {
+        // Check for existing pending request with same token (idempotency)
+        $existingLog = $this->checkIdempotency($idempotencyToken, $user->id);
+        
+        if ($existingLog) {
+            if ($existingLog->status === TaskCreationLog::STATUS_COMPLETED) {
+                // Return existing successful result
+                return [
+                    'task' => $existingLog->task,
+                    'success' => true,
+                    'message' => 'Task created successfully (from previous request)',
+                    'status' => Response::HTTP_CREATED,
+                    'existing' => true,
+                ];
+            }
+
+            if ($existingLog->status === TaskCreationLog::STATUS_PROCESSING) {
+                // Request is still being processed
+                return [
+                    'task' => null,
+                    'success' => false,
+                    'message' => 'Your previous request is still being processed. Please wait.',
+                    'status' => Response::HTTP_CONFLICT,
+                ];
+            }
+
+            if ($existingLog->status === TaskCreationLog::STATUS_FAILED) {
+                // Allow retry - create new log entry
+                $idempotencyToken = (string) Str::uuid();
+            }
+        }
+
+        // Create new creation log
+        $creationLog = $this->createCreationLog(
+            $user->id,
+            $idempotencyToken,
+            $data,
+            $request
+        );
+
+        try {
+            // Validate user can create tasks
+            if (!$user->canCreateTasks()) {
+                $this->logFailure($creationLog, 'User is not authorized to create tasks');
+                return [
+                    'task' => null,
+                    'success' => false,
+                    'message' => 'You are not authorized to create tasks. Please activate your wallet first.',
+                    'status' => Response::HTTP_FORBIDDEN,
+                ];
+            }
+
+            // Check rate limiting
+            if (!$this->checkRateLimit($user->id)) {
+                $this->logFailure($creationLog, 'Rate limit exceeded');
+                return [
+                    'task' => null,
+                    'success' => false,
+                    'message' => 'Too many tasks created. Please try again later.',
+                    'status' => Response::HTTP_TOO_MANY_REQUESTS,
+                ];
+            }
+
+            // Check wallet balance if not saving as draft
+            $isDraft = $data['save_draft'] ?? false;
+            
+            if (!$isDraft) {
+                $walletCheck = $this->checkWalletBalance($user, $data['budget']);
+                if (!$walletCheck['sufficient']) {
+                    $this->logFailure($creationLog, 'Insufficient wallet balance');
+                    return [
+                        'task' => null,
+                        'success' => false,
+                        'message' => $walletCheck['message'],
+                        'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                        'redirect' => route('wallet.deposit'),
+                    ];
+                }
+            }
+
+            // Validate category exists and is active
+            $category = $this->taskRepository->getCategoryById($data['category_id']);
+            if (!$category || !$category->is_active) {
+                $this->logFailure($creationLog, 'Invalid or inactive category');
+                return [
+                    'task' => null,
+                    'success' => false,
+                    'message' => 'The selected category is not available.',
+                    'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                ];
+            }
+
+            // Create the task using repository (transaction-safe)
+            $task = $this->taskRepository->create($data);
+
+            // Deduct from wallet if not a draft
+            if (!$isDraft) {
+                $this->deductFromWallet($user, $data['budget'], $task);
+            }
+
+            // Mark creation log as completed
+            $creationLog->markCompleted($task, [
+                'task_id' => $task->id,
+                'budget' => $task->budget,
+                'quantity' => $task->quantity,
+            ]);
+
+            // Send notification
+            $this->sendTaskCreatedNotification($user, $task);
+
+            Log::info('Task created successfully', [
+                'task_id' => $task->id,
+                'user_id' => $user->id,
+                'budget' => $task->budget,
+                'category' => $category->name,
+            ]);
+
+            return [
+                'task' => $task,
+                'success' => true,
+                'message' => $isDraft ? 'Task saved as draft.' : 'Task created successfully!',
+                'status' => Response::HTTP_CREATED,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Task creation failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->logFailure($creationLog, $e->getMessage());
+
+            return [
+                'task' => null,
+                'success' => false,
+                'message' => 'An error occurred while creating the task. Please try again.',
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            ];
+        }
+    }
+
+    /**
+     * Queue a task creation for async processing (for heavy operations).
+     *
+     * @param User $user
+     * @param array $data
+     * @param string $idempotencyToken
+     * @param Request $request
+     * @return array
+     */
+    public function queueTaskCreation(
+        User $user,
+        array $data,
+        string $idempotencyToken,
+        Request $request
+    ): array {
+        // Create creation log
+        $creationLog = $this->createCreationLog(
+            $user->id,
+            $idempotencyToken,
+            $data,
+            $request
+        );
+
+        // Dispatch job to queue
+        ProcessTaskCreation::dispatch(
+            $user,
+            $data,
+            $idempotencyToken
+        )->onQueue('task-creation');
+
+        return [
+            'success' => true,
+            'message' => 'Task creation is being processed. You will be notified when complete.',
+            'status' => Response::HTTP_ACCEPTED,
+            'token' => $idempotencyToken,
+        ];
+    }
+
+    /**
+     * Save task draft to session.
+     *
+     * @param User $user
+     * @param array $data
+     * @return array
+     */
+    public function saveDraft(User $user, array $data): array
+    {
+        try {
+            // Store draft in session with user-specific key
+            $draftKey = "task_draft_{$user->id}";
+            
+            // Sanitize data before storing
+            $sanitizedData = $this->sanitizeDraftData($data);
+            
+            // Store in session (expires in 24 hours)
+            session()->put($draftKey, $sanitizedData);
+            session()->put("{$draftKey}_expires", now()->addHours(24));
+
+            return [
+                'success' => true,
+                'message' => 'Draft saved successfully.',
+                'status' => Response::HTTP_OK,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Failed to save task draft', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to save draft. Please try again.',
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            ];
+        }
+    }
+
+    /**
+     * Retrieve saved draft for user.
+     *
+     * @param User $user
+     * @return array|null
+     */
+    public function getDraft(User $user): ?array
+    {
+        $draftKey = "task_draft_{$user->id}";
+        $expiresAt = session("{$draftKey}_expires");
+
+        if (!$expiresAt || now()->isAfter($expiresAt)) {
+            // Draft expired, clear it
+            session()->forget($draftKey);
+            session()->forget("{$draftKey}_expires");
+            return null;
+        }
+
+        return session()->get($draftKey);
+    }
+
+    /**
+     * Clear saved draft for user.
+     *
+     * @param User $user
+     * @return void
+     */
+    public function clearDraft(User $user): void
+    {
+        $draftKey = "task_draft_{$user->id}";
+        session()->forget($draftKey);
+        session()->forget("{$draftKey}_expires");
+    }
+
+    /**
+     * Generate a new idempotency token.
+     *
+     * @return string
+     */
+    public function generateIdempotencyToken(): string
+    {
+        return (string) Str::uuid();
+    }
+
+    /**
+     * Check for existing request with same idempotency token.
+     *
+     * @param string $token
+     * @param int $userId
+     * @return TaskCreationLog|null
+     */
+    protected function checkIdempotency(string $token, int $userId): ?TaskCreationLog
+    {
+        return TaskCreationLog::where('token', $token)
+            ->where('user_id', $userId)
+            ->whereIn('status', [
+                TaskCreationLog::STATUS_PENDING,
+                TaskCreationLog::STATUS_PROCESSING,
+                TaskCreationLog::STATUS_COMPLETED,
+            ])
+            ->first();
+    }
+
+    /**
+     * Create a new task creation log entry.
+     *
+     * @param int $userId
+     * @param string $token
+     * @param array $data
+     * @param Request $request
+     * @return TaskCreationLog
+     */
+    protected function createCreationLog(
+        int $userId,
+        string $token,
+        array $data,
+        Request $request
+    ): TaskCreationLog {
+        return TaskCreationLog::create([
+            'token' => $token,
+            'user_id' => $userId,
+            'status' => TaskCreationLog::STATUS_PROCESSING,
+            'request_payload' => $this->sanitizeForLogging($data),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+    }
+
+    /**
+     * Log a failure for a creation log entry.
+     *
+     * @param TaskCreationLog $log
+     * @param string $reason
+     * @return void
+     */
+    protected function logFailure(TaskCreationLog $log, string $reason): void
+    {
+        $log->markFailed($reason);
+    }
+
+    /**
+     * Check rate limiting for task creation.
+     *
+     * @param int $userId
+     * @return bool
+     */
+    protected function checkRateLimit(int $userId): bool
+    {
+        // Get rate limit from settings or use default
+        $maxTasksPerDay = config('earndesk.rate_limits.tasks_per_day', 50);
+        $maxTasksPerHour = config('earndesk.rate_limits.tasks_per_hour', 10);
+
+        $todayCount = $this->taskRepository->getUserTodayTaskCount($userId);
+
+        if ($todayCount >= $maxTasksPerDay) {
+            return false;
+        }
+
+        // Check hourly rate limit
+        $hourlyCount = Task::where('user_id', $userId)
+            ->where('created_at', '>=', now()->subHour())
+            ->count();
+
+        return $hourlyCount < $maxTasksPerHour;
+    }
+
+    /**
+     * Check if user has sufficient wallet balance.
+     *
+     * @param User $user
+     * @param float $requiredAmount
+     * @return array{sufficient: bool, message: string, balance: float}
+     */
+    protected function checkWalletBalance(User $user, float $requiredAmount): array
+    {
+        $wallet = $user->wallet;
+
+        if (!$wallet) {
+            return [
+                'sufficient' => false,
+                'message' => 'Please activate your wallet first.',
+                'balance' => 0,
+            ];
+        }
+
+        $totalBalance = $wallet->withdrawable_balance + $wallet->promo_credit_balance;
+
+        return [
+            'sufficient' => $totalBalance >= $requiredAmount,
+            'message' => "Insufficient balance. Required: ₦" . number_format($requiredAmount, 2) 
+                . ", Available: ₦" . number_format($totalBalance, 2),
+            'balance' => $totalBalance,
+        ];
+    }
+
+    /**
+     * Deduct amount from user's wallet.
+     *
+     * @param User $user
+     * @param float $amount
+     * @param Task $task
+     * @return void
+     */
+    protected function deductFromWallet(User $user, float $amount, Task $task): void
+    {
+        $wallet = $user->wallet;
+
+        if (!$wallet) {
+            throw new \RuntimeException('Wallet not found');
+        }
+
+        DB::transaction(function () use ($wallet, $amount, $task, $user) {
+            // Use withdrawable balance first, then promo credit
+            $withdrawableUsed = min($amount, $wallet->withdrawable_balance);
+            $promoUsed = $amount - $withdrawableUsed;
+
+            if ($withdrawableUsed > 0) {
+                $wallet->decrement('withdrawable_balance', $withdrawableUsed);
+                
+                // Record transaction
+                $this->earnDeskService->recordTransaction(
+                    $user,
+                    'task_payment',
+                    -$withdrawableUsed,
+                    $wallet->id,
+                    "Task payment: {$task->title}"
+                );
+            }
+
+            if ($promoUsed > 0) {
+                $wallet->decrement('promo_credit_balance', $promoUsed);
+            }
+        });
+    }
+
+    /**
+     * Send notification when task is created.
+     *
+     * @param User $user
+     * @param Task $task
+     * @return void
+     */
+    protected function sendTaskCreatedNotification(User $user, Task $task): void
+    {
+        try {
+            $user->notify(new TaskApproved($task));
+        } catch (\Exception $e) {
+            Log::warning('Failed to send task creation notification', [
+                'user_id' => $user->id,
+                'task_id' => $task->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Sanitize data for logging (remove sensitive fields).
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function sanitizeForLogging(array $data): array
+    {
+        $sensitiveFields = ['password', 'token', 'secret', 'api_key'];
+        
+        foreach ($sensitiveFields as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = '***REDACTED***';
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Sanitize draft data for storage.
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function sanitizeDraftData(array $data): array
+    {
+        // Remove any sensitive data from draft
+        return $this->sanitizeForLogging($data);
+    }
+
+    /**
+     * Get category configuration for the create form.
+     *
+     * @return array
+     */
+    public function getCategoryConfig(): array
+    {
+        $categories = $this->taskRepository->getCategories();
+        $groups = ['micro', 'ugc', 'referral', 'premium'];
+        
+        $config = [];
+        
+        foreach ($groups as $group) {
+            $groupCats = $categories->where('task_type', $group);
+            
+            if ($groupCats->isEmpty()) {
+                $config[$group] = [
+                    'label' => $group,
+                    'badge' => '',
+                    'badgeText' => '',
+                    'minBudget' => 0,
+                    'platforms' => [],
+                ];
+                continue;
+            }
+
+            $platforms = [];
+            foreach ($groupCats as $cat) {
+                $pid = $cat->platform ?? 'other';
+                if (!isset($platforms[$pid])) {
+                    $platforms[$pid] = [
+                        'id' => $pid,
+                        'name' => $pid,
+                        'icon' => '',
+                        'tasks' => [],
+                    ];
+                }
+                
+                $platforms[$pid]['tasks'][] = [
+                    'value' => $cat->id,
+                    'name' => $cat->name,
+                    'price' => [
+                        'min' => (float) ($cat->min_price ?? $cat->base_price ?? 0),
+                        'max' => (float) ($cat->max_price ?? $cat->base_price ?? 0),
+                    ],
+                    'categoryName' => $cat->name,
+                    'proof_type' => $cat->proof_type ?? null,
+                    'min_level' => (int) ($cat->min_level ?? 1),
+                ];
+            }
+
+            $config[$group] = [
+                'label' => $group,
+                'badge' => '',
+                'badgeText' => '',
+                'minBudget' => 0,
+                'platforms' => array_values($platforms),
+            ];
+        }
+
+        return $config;
+    }
+}
