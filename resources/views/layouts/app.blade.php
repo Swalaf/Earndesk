@@ -209,7 +209,7 @@
             color: #6b7280;
         }
 
-        /* Enhanced Toggle Buttons - Permanent Borders */
+        /* Enhanced Toggle Buttons - Always Visible Borders */
         .toggle-switch {
             position: relative;
             display: inline-block;
@@ -231,22 +231,26 @@
             right: 0;
             bottom: 0;
             background-color: #e5e7eb;
-            border: 2px solid #d1d5db;
+            border: 2px solid #9ca3af;
             border-radius: 28px;
             transition: all 0.3s ease;
+        }
+        
+        .toggle-slider:hover {
+            border-color: #6b7280;
         }
         
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
-            left: 2px;
-            bottom: 2px;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             border-radius: 50%;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         input:checked + .toggle-slider {
@@ -259,13 +263,17 @@
         }
         
         .dark .toggle-slider {
-            background-color: #374151;
-            border-color: #4b5563;
+            background-color: #1f2937;
+            border: 2px solid #6b7280;
+        }
+        
+        .dark .toggle-slider:hover {
+            border-color: #9ca3af;
         }
         
         .dark input:checked + .toggle-slider {
-            background-color: #2563eb;
-            border-color: #1d4ed8;
+            background-color: #3b82f6;
+            border-color: #60a5fa;
         }
 
         /* Professional Tooltips */

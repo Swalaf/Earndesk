@@ -151,10 +151,11 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        /* Toggle switch (checkbox) styling for dark mode */
+        /* Toggle switch (checkbox) styling for dark mode - Always visible borders */
         .dark input[type="checkbox"].peer,
         .dark input[type="checkbox"][class*="peer"] {
-            background-color: #1e293b;
+            background-color: #1f2937;
+            border: 2px solid #6b7280;
             border-color: #475569;
         }
         
@@ -171,9 +172,12 @@
             border-color: #475569;
         }
 
-        /* Toggle switch alternative - inline styles */
+        /* Toggle switch alternative - inline styles - Always visible borders */
         .dark input[type="checkbox"] {
             accent-color: #4f46e5;
+            border: 2px solid #6b7280;
+            border-radius: 4px;
+            background-color: #1f2937;
             background-color: #1e293b;
             border-color: #475569;
         }

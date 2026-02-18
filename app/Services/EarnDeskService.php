@@ -278,4 +278,51 @@ class EarnDeskService
                 : "Minimum budget for {$taskType} tasks is " . self::formatCurrency($minBudget),
         ];
     }
+
+    /**
+     * Get platform statistics for admin dashboard
+     */
+    public function getPlatformStats(): array
+    {
+        $totalUsers = User::count();
+        $newUsersToday = User::whereDate('created_at', today())->count();
+        $activatedUsers = Wallet::where('is_activated', true)->count();
+        
+        $totalTasks = Task::count();
+        $activeTasks = Task::where('is_active', true)->count();
+        $pendingTasks = Task::where('is_approved', false)->count();
+        
+        $totalWalletBalance = Wallet::sum('withdrawable_balance') + Wallet::sum('promo_credit_balance');
+        $totalEarnings = Wallet::sum('total_earned');
+        $totalPendingWithdrawals = \App\Models\Withdrawal::where('status', 'pending')->sum('amount');
+        $totalCompletedWithdrawals = \App\Models\Withdrawal::where('status', 'completed')->sum('amount');
+        $totalWithdrawalFees = \App\Models\Withdrawal::where('status', 'completed')->sum('fee') ?? 0;
+        
+        $totalTaskCompletions = TaskCompletion::count();
+        $pendingCompletions = TaskCompletion::where('status', 'pending')->count();
+        $approvedCompletions = TaskCompletion::where('status', 'approved')->count();
+        $rejectedCompletions = TaskCompletion::where('status', 'rejected')->count();
+        
+        $unresolvedFraudLogs = \App\Models\FraudLog::where('is_resolved', false)->count() ?? 0;
+
+        return [
+            'total_users' => $totalUsers,
+            'new_users_today' => $newUsersToday,
+            'activated_users' => $activatedUsers,
+            'total_tasks' => $totalTasks,
+            'active_tasks' => $activeTasks,
+            'pending_tasks' => $pendingTasks,
+            'total_wallet_balance' => $totalWalletBalance,
+            'total_earnings' => $totalEarnings,
+            'total_withdrawals' => $totalCompletedWithdrawals,
+            'total_pending_withdrawals' => $totalPendingWithdrawals ?? 0,
+            'pending_withdrawals' => \App\Models\Withdrawal::where('status', 'pending')->count() ?? 0,
+            'total_fees' => $totalWithdrawalFees,
+            'total_task_completions' => $totalTaskCompletions,
+            'pending_completions' => $pendingCompletions,
+            'approved_completions' => $approvedCompletions,
+            'rejected_completions' => $rejectedCompletions,
+            'unresolved_fraud_logs' => $unresolvedFraudLogs,
+        ];
+    }
 }
