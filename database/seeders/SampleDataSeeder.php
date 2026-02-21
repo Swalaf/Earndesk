@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Task;
@@ -12,6 +13,18 @@ class SampleDataSeeder extends Seeder
 {
     public function run()
     {
+        // Only run in local/development environment
+        if (app()->environment('production')) {
+            $this->command->info('SampleDataSeeder skipped in production');
+            return;
+        }
+
+        // Check if required tables exist
+        if (!Schema::hasTable('users') || !Schema::hasTable('wallets') || !Schema::hasTable('tasks')) {
+            $this->command->info('Required tables do not exist, skipping SampleDataSeeder');
+            return;
+        }
+
         // Create users
         $clients = User::factory()->count(3)->create();
         $workers = User::factory()->count(10)->create();

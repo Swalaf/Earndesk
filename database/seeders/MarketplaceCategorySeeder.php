@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\MarketplaceCategory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class MarketplaceCategorySeeder extends Seeder
 {
@@ -12,6 +13,12 @@ class MarketplaceCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if table exists
+        if (!Schema::hasTable('marketplace_categories')) {
+            $this->command->info('marketplace_categories table does not exist, skipping...');
+            return;
+        }
+
         // Clear existing categories to avoid duplicates
         MarketplaceCategory::truncate();
 

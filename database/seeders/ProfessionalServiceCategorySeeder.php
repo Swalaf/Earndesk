@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ProfessionalServiceCategory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class ProfessionalServiceCategorySeeder extends Seeder
 {
@@ -12,6 +13,12 @@ class ProfessionalServiceCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if table exists
+        if (!Schema::hasTable('professional_service_categories')) {
+            $this->command->info('professional_service_categories table does not exist, skipping...');
+            return;
+        }
+
         $categories = [
             [
                 'name' => 'Web Development',
