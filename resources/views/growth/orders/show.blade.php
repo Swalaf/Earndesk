@@ -1,4 +1,4 @@
-@extends('layouts.app')
+k mo@extends('layouts.app')
 
 @section('title', 'Order Details - Growth Marketplace')
 
