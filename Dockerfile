@@ -35,10 +35,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy application files
 COPY . .
 
-# Set permissions
+# Create storage directories if they don't exist
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
+
+# Set permissions - CRITICAL: Do this BEFORE composer install
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
@@ -60,12 +63,15 @@ RUN echo '<VirtualHost *:80>\n\
 # Create startup script
 RUN echo '#!/bin/bash\n\
     set -e\n\
-    echo "Starting application..."\n\
+    echo "Setting permissions..."\n\
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
+    echo "Caching configuration..."\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
     echo "Running migrations..."\n\
-    php artisan migrate --force || echo "Migration failed, continuing..."\n\
+    php artisan migrate --force || echo "Migration warning..."\n\
     echo "Starting Apache..."\n\
     apache2-foreground' > /start.sh && chmod +x /start.sh
 

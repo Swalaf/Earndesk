@@ -60,6 +60,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Force HTTPS in production (for Render and other cloud providers)
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Apply mail configuration from system settings if present
         try {
             $enabled = SystemSetting::getBool('smtp_enabled', false);
