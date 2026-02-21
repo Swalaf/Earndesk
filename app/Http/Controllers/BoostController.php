@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\BoostPackage;
 use App\Models\UserBoost;
+use App\Models\Task;
+use App\Models\ProfessionalService;
+use App\Models\DigitalProduct;
+use App\Models\GrowthListing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +26,139 @@ class BoostController extends Controller
             ->with('package')
             ->get();
 
-        return view('boost.index', compact('packages', 'activeBoosts'));
+        // Get user's items that can be boosted
+        $userItems = $this->getUserBoostableItems($user);
+
+        return view('boost.index', compact('packages', 'activeBoosts', 'userItems'));
+    }
+
+    /**
+     * Get user's items that can be boosted
+     */
+    private function getUserBoostableItems($user)
+    {
+        $items = [];
+
+        // Tasks
+        $tasks = Task::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('is_approved', true)
+            ->select('id', 'title', 'created_at')
+            ->get();
+        
+        foreach ($tasks as $task) {
+            $items[] = [
+                'id' => $task->id,
+                'type' => 'task',
+                'title' => $task->title,
+                'created_at' => $task->created_at,
+            ];
+        }
+
+        // Professional Services
+        $services = ProfessionalService::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->select('id', 'title', 'created_at')
+            ->get();
+        
+        foreach ($services as $service) {
+            $items[] = [
+                'id' => $service->id,
+                'type' => 'service',
+                'title' => $service->title,
+                'created_at' => $service->created_at,
+            ];
+        }
+
+        // Digital Products
+        $products = DigitalProduct::where('user_id', $user->id)
+            ->where('is_active', true)
+            ->select('id', 'title', 'created_at')
+            ->get();
+        
+        foreach ($products as $product) {
+            $items[] = [
+                'id' => $product->id,
+                'type' => 'product',
+                'title' => $product->title,
+                'created_at' => $product->created_at,
+            ];
+        }
+
+        // Growth Listings
+        $growthListings = GrowthListing::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->select('id', 'title', 'created_at')
+            ->get();
+        
+        foreach ($growthListings as $listing) {
+            $items[] = [
+                'id' => $listing->id,
+                'type' => 'growth',
+                'title' => $listing->title,
+                'created_at' => $listing->created_at,
+            ];
+        }
+
+        return $items;
+    }
+
+    /**
+     * Get user's boostable items via AJAX
+     */
+    public function getItems(Request $request)
+    {
+        $user = Auth::user();
+        $type = $request->get('type', 'all');
+        
+        $items = [];
+        
+        if ($type === 'all' || $type === 'task') {
+            $tasks = Task::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->where('is_approved', true)
+                ->select('id', 'title')
+                ->get();
+            
+            foreach ($tasks as $task) {
+                $items[] = ['id' => $task->id, 'type' => 'task', 'title' => $task->title];
+            }
+        }
+        
+        if ($type === 'all' || $type === 'service') {
+            $services = ProfessionalService::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->select('id', 'title')
+                ->get();
+            
+            foreach ($services as $service) {
+                $items[] = ['id' => $service->id, 'type' => 'service', 'title' => $service->title];
+            }
+        }
+        
+        if ($type === 'all' || $type === 'product') {
+            $products = DigitalProduct::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->select('id', 'title')
+                ->get();
+            
+            foreach ($products as $product) {
+                $items[] = ['id' => $product->id, 'type' => 'product', 'title' => $product->title];
+            }
+        }
+        
+        if ($type === 'all' || $type === 'growth') {
+            $growthListings = GrowthListing::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->select('id', 'title')
+                ->get();
+            
+            foreach ($growthListings as $listing) {
+                $items[] = ['id' => $listing->id, 'type' => 'growth', 'title' => $listing->title];
+            }
+        }
+
+        return response()->json(['items' => $items]);
     }
 
     /**
@@ -32,7 +168,7 @@ class BoostController extends Controller
     {
         $request->validate([
             'package_id' => 'required|exists:boost_packages,id',
-            'target_type' => 'required|in:task,service,product,job',
+            'target_type' => 'required|in:task,service,product,growth',
             'target_id' => 'required|integer',
         ]);
 
@@ -67,7 +203,31 @@ class BoostController extends Controller
         ]);
         $boost->save();
 
-        return back()->with('success', 'Boost activated successfully!');
+        // Set the target item as featured
+        $this->setFeatured($request->target_type, $request->target_id, true);
+
+        return back()->with('success', 'Boost activated successfully! Your listing is now featured.');
+    }
+
+    /**
+     * Set featured status on an item
+     */
+    private function setFeatured($type, $id, $featured)
+    {
+        switch ($type) {
+            case 'task':
+                Task::where('id', $id)->update(['is_featured' => $featured]);
+                break;
+            case 'service':
+                ProfessionalService::where('id', $id)->update(['is_featured' => $featured]);
+                break;
+            case 'product':
+                DigitalProduct::where('id', $id)->update(['is_featured' => $featured]);
+                break;
+            case 'growth':
+                GrowthListing::where('id', $id)->update(['is_featured' => $featured]);
+                break;
+        }
     }
 
     /**
@@ -114,7 +274,7 @@ class BoostController extends Controller
      */
     public function cancel(UserBoost $boost)
     {
-        $user = Auth::auth();
+        $user = Auth::user();
 
         if ($boost->user_id !== $user->id) {
             abort(403);
@@ -137,6 +297,9 @@ class BoostController extends Controller
             $user->wallet->withdrawable_balance += $refundAmount;
             $user->wallet->save();
         }
+
+        // Remove featured status from the item
+        $this->setFeatured($boost->target_type, $boost->target_id, false);
 
         $boost->status = 'cancelled';
         $boost->save();

@@ -58,6 +58,11 @@ class DatabaseSeeder extends Seeder
             ProfessionalServiceCategorySeeder::class,
         ]);
         
+        // Seed boost packages
+        $this->call([
+            BoostPackageSeeder::class,
+        ]);
+        
         // Seed badges
         $this->seedBadges();
         

@@ -508,9 +508,10 @@ Route::prefix('verification')->name('verification.')->group(function () {
 Route::prefix('boost')->name('boost.')->group(function () {
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [BoostController::class, 'index'])->name('index');
-        Route::post('/purchase', [BoostController::class, 'purchase'])->name('purchase');
+        Route::get('/items', [BoostController::class, 'getItems'])->name('items');
         Route::post('/activate', [BoostController::class, 'activate'])->name('activate');
-        Route::post('/deactivate', [BoostController::class, 'deactivate'])->name('deactivate');
+        Route::post('/extend/{boost}', [BoostController::class, 'extend'])->name('extend');
+        Route::delete('/cancel/{boost}', [BoostController::class, 'cancel'])->name('cancel');
     });
 });
 
