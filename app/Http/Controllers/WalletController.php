@@ -172,7 +172,7 @@ class WalletController extends Controller
      */
     public function processActivation(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user() ?? Auth::user();
         // Determine referrer: use relation first, then fallback to Referral record if present
         $referrer = $user->referredBy;
         if (!$referrer) {
@@ -193,7 +193,19 @@ class WalletController extends Controller
             }
         }
 
-        $result = $this->earnDeskService->activateUser($user, $referrer);
+        try {
+            $result = $this->earnDeskService->activateUser($user, $referrer);
+        } catch (\Exception $e) {
+            Log::error('Activation failed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('wallet.activate')
+                ->with('error', 'Activation failed: ' . $e->getMessage())
+                ->withInput();
+        }
 
         if ($result['success']) {
             // Check if mandatory task creation gate is enabled

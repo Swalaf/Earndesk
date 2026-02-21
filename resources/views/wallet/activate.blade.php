@@ -75,16 +75,34 @@
                             <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Complete tasks and earn real money</span>
                         </li>
                         <li class="flex items-start">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-briefcase text-indigo-600 dark:text-indigo-400 text-xs sm:text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Hire professionals for your projects</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-chart-line text-purple-600 dark:text-purple-400 text-xs sm:text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Access growth listings to boost your brand</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-shopping-bag text-pink-600 dark:text-pink-400 text-xs sm:text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Buy and sell digital products</span>
+                        </li>
+                        <li class="flex items-start">
                             <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
                                 <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xs sm:text-sm"></i>
                             </div>
                             <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Withdraw earnings to your bank account</span>
                         </li>
                         <li class="flex items-start">
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
-                                <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xs sm:text-sm"></i>
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-yellow-100 dark:bg-yellow-500/20 flex items-center justify-center mr-2 sm:mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-star text-yellow-600 dark:text-yellow-400 text-xs sm:text-sm"></i>
                             </div>
-                            <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Level up and unlock premium tasks</span>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Level up and unlock premium features</span>
                         </li>
                     </ul>
 

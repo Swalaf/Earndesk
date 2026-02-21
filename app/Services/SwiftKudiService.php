@@ -124,16 +124,31 @@ class SwiftKudiService
     public function activateUser(User $user, ?User $referrer = null): array
     {
         return DB::transaction(function () use ($user, $referrer) {
-            // Get or create wallet
-            $wallet = $user->wallet ?? Wallet::create([
-                'user_id' => $user->id,
-                'withdrawable_balance' => 0,
-                'promo_credit_balance' => 0,
-                'total_earned' => 0,
-                'total_spent' => 0,
-                'pending_balance' => 0,
-                'escrow_balance' => 0,
-            ]);
+            // Get or create wallet with error handling for missing columns
+            try {
+                $wallet = $user->wallet ?? Wallet::create([
+                    'user_id' => $user->id,
+                    'withdrawable_balance' => 0,
+                    'promo_credit_balance' => 0,
+                    'total_earned' => 0,
+                    'total_spent' => 0,
+                    'pending_balance' => 0,
+                    'escrow_balance' => 0,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Wallet creation failed, trying without earning categories', ['error' => $e->getMessage()]);
+                $wallet = Wallet::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'withdrawable_balance' => 0,
+                        'promo_credit_balance' => 0,
+                        'total_earned' => 0,
+                        'total_spent' => 0,
+                        'pending_balance' => 0,
+                        'escrow_balance' => 0,
+                    ]
+                );
+            }
 
             // Check if already activated
             if ($wallet->is_activated) {
