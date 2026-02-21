@@ -37,6 +37,7 @@ class Task extends Model
         'starts_at',
         'expires_at',
         'is_sample',
+        'is_permanent_referral',
     ];
 
     protected $casts = [
@@ -55,6 +56,7 @@ class Task extends Model
         'starts_at' => 'datetime',
         'expires_at' => 'datetime',
         'is_sample' => 'boolean',
+        'is_permanent_referral' => 'boolean',
     ];
 
     /**
@@ -479,6 +481,15 @@ class Task extends Model
                 $q->where('user_id', $user->id)
                   ->whereIn('status', ['pending', 'approved']);
             });
+    }
+
+    /**
+     * Scope: Permanent referral tasks (visible to all users)
+     */
+    public function scopePermanentReferral($query)
+    {
+        return $query->where('is_permanent_referral', true)
+            ->where('is_active', true);
     }
 
     /**

@@ -3,104 +3,167 @@
 @section('title', 'Users')
 
 @section('content')
-<div class="py-8">
+<div class="py-4 lg:py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 lg:mb-8">
             <div>
-                <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Manage Users</h1>
-                <p class="text-gray-600 dark:text-gray-400 mt-1">View and manage all registered users</p>
+                <h1 class="text-2xl lg:text-3xl font-bold text-white">Manage Users</h1>
+                <p class="text-gray-400 mt-1 text-sm lg:text-base">View and manage all registered users</p>
             </div>
-            <a href="{{ route('admin.index') }}" class="inline-flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
+            <a href="{{ route('admin.index') }}" class="inline-flex items-center text-indigo-400 hover:text-indigo-300 text-sm">
                 <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
             </a>
         </div>
 
         <!-- Search & Filters -->
-        <div class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 p-6 mb-8">
-            <form action="{{ route('admin.users') }}" method="GET" class="flex flex-wrap gap-4 items-end">
-                <div class="flex-1 min-w-[200px]">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
+        <div class="bg-dark-900 rounded-2xl shadow-lg border border-dark-700 p-4 lg:p-6 mb-6 lg:mb-8">
+            <form action="{{ route('admin.users') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Search</label>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..."
-                        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500">
+                        class="w-full px-4 py-2.5 bg-dark-800 border border-dark-600 rounded-xl text-gray-100 focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
-                <div class="flex-1 min-w-[150px]">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
-                    <select name="status" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500">
+                <div class="sm:w-48">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                    <select name="status" class="w-full px-4 py-2.5 bg-dark-800 border border-dark-600 rounded-xl text-gray-100 focus:ring-2 focus:ring-indigo-500 text-sm">
                         <option value="">All Status</option>
                         <option value="activated" {{ request('status') === 'activated' ? 'selected' : '' }}>Activated</option>
                         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                     </select>
                 </div>
-                <div>
-                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl shadow-lg shadow-indigo-500/30">
+                <div class="sm:self-end">
+                    <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl shadow-lg shadow-indigo-500/30 text-sm">
                         <i class="fas fa-search mr-2"></i>Search
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Users Table -->
-        <div class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 overflow-hidden">
+        <!-- Mobile Cards View (visible on mobile only) -->
+        <div class="lg:hidden space-y-4">
+            @foreach($users as $user)
+            <div class="bg-dark-900 rounded-2xl shadow-lg border border-dark-700 p-4">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        </div>
+                        <div>
+                            <p class="font-medium text-white">{{ $user->name }}</p>
+                            <p class="text-sm text-gray-400">{{ $user->email }}</p>
+                        </div>
+                    </div>
+                    @if($user->is_admin)
+                    <span class="px-2 py-1 text-xs font-semibold bg-purple-500/20 text-purple-400 rounded-lg">
+                        <i class="fas fa-shield-alt mr-1"></i>Admin
+                    </span>
+                    @endif
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="bg-dark-800 rounded-lg p-3">
+                        <p class="text-xs text-gray-500 mb-1">Status</p>
+                        @if($user->wallet && $user->wallet->is_activated)
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                            <i class="fas fa-check-circle mr-1"></i>Activated
+                        </span>
+                        @else
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400">
+                            <i class="fas fa-clock mr-1"></i>Pending
+                        </span>
+                        @endif
+                    </div>
+                    <div class="bg-dark-800 rounded-lg p-3">
+                        <p class="text-xs text-gray-500 mb-1">Level</p>
+                        <p class="text-sm font-medium text-white">Level {{ $user->level }}</p>
+                    </div>
+                    <div class="bg-dark-800 rounded-lg p-3">
+                        <p class="text-xs text-gray-500 mb-1">Wallet</p>
+                        @if($user->wallet)
+                        <p class="text-sm font-medium text-green-400">
+                            ₦{{ number_format($user->wallet->withdrawable_balance + $user->wallet->promo_credit_balance, 2) }}
+                        </p>
+                        @else
+                        <p class="text-sm text-gray-500">No wallet</p>
+                        @endif
+                    </div>
+                    <div class="bg-dark-800 rounded-lg p-3">
+                        <p class="text-xs text-gray-500 mb-1">Joined</p>
+                        <p class="text-sm text-gray-300">{{ $user->created_at->format('M d, Y') }}</p>
+                    </div>
+                </div>
+                
+                <a href="{{ route('admin.user-details', $user) }}" class="w-full flex items-center justify-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl hover:bg-indigo-500/20 transition-colors text-sm font-medium">
+                    <i class="fas fa-eye mr-2"></i>View Details
+                </a>
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Desktop Table View (visible on desktop only) -->
+        <div class="hidden lg:block bg-dark-900 rounded-2xl shadow-lg border border-dark-700 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-                    <thead class="bg-gray-50 dark:bg-dark-800">
+                <table class="min-w-full divide-y divide-dark-700">
+                    <thead class="bg-dark-800">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">User</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Level</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Wallet</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Joined</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">User</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Level</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Wallet</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Joined</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-dark-900 divide-y divide-gray-200 dark:divide-dark-700">
+                    <tbody class="bg-dark-900 divide-y divide-dark-700">
                         @foreach($users as $user)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
+                        <tr class="hover:bg-dark-800 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
                                         {{ strtoupper(substr($user->name, 0, 2)) }}
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-gray-100">{{ $user->name }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $user->email }}</p>
+                                        <p class="font-medium text-white">{{ $user->name }}</p>
+                                        <p class="text-sm text-gray-400">{{ $user->email }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
                                 @if($user->wallet && $user->wallet->is_activated)
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
                                     <i class="fas fa-check-circle mr-1"></i>Activated
                                 </span>
                                 @else
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400">
                                     <i class="fas fa-clock mr-1"></i>Pending
                                 </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Level {{ $user->level }}</span>
+                                <span class="text-sm font-medium text-white">Level {{ $user->level }}</span>
                             </td>
                             <td class="px-6 py-4">
                                 @if($user->wallet)
-                                <span class="text-sm font-medium text-green-600 dark:text-green-400">
+                                <span class="text-sm font-medium text-green-400">
                                     ₦{{ number_format($user->wallet->withdrawable_balance + $user->wallet->promo_credit_balance, 2) }}
                                 </span>
                                 @else
-                                <span class="text-gray-400 dark:text-gray-500">No wallet</span>
+                                <span class="text-gray-500">No wallet</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                            <td class="px-6 py-4 text-sm text-gray-400">
                                 {{ $user->created_at->format('M d, Y') }}
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('admin.user-details', $user) }}" class="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-dark-700 rounded-lg transition-colors" title="View Details">
+                                    <a href="{{ route('admin.user-details', $user) }}" class="p-2 text-indigo-400 hover:bg-dark-700 rounded-lg transition-colors" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    @if($user->wallet && $user->wallet->is_activated)
-                                    <span class="px-2 py-1 text-xs font-medium text-gray-400 dark:text-gray-500">Admin</span>
+                                    @if($user->is_admin)
+                                    <span class="px-2 py-1 text-xs font-semibold bg-purple-500/20 text-purple-400 rounded-lg">
+                                        <i class="fas fa-shield-alt mr-1"></i>Admin
+                                    </span>
                                     @endif
                                 </div>
                             </td>
@@ -111,9 +174,14 @@
             </div>
             
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-dark-700">
+            <div class="px-6 py-4 border-t border-dark-700">
                 {{ $users->appends(request()->query())->links() }}
             </div>
+        </div>
+        
+        <!-- Mobile Pagination -->
+        <div class="lg:hidden mt-4">
+            {{ $users->appends(request()->query())->links() }}
         </div>
     </div>
 </div>

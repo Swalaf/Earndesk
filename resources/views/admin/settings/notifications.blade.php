@@ -294,7 +294,7 @@
         </div>
 
         <!-- Email Test Section -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-6">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Test Email Configuration</h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Send a test email to verify your SMTP settings</p>
@@ -313,6 +313,100 @@
                 </form>
             </div>
         </div>
+
+        <!-- Send Push Notification Section -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <div class="bg-indigo-100 dark:bg-indigo-900 rounded-lg p-2 mr-3">
+                        <i class="fas fa-bullhorn text-indigo-600 dark:text-indigo-300 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Send Push Notification</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Send email or in-app notification to users</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <form action="{{ route('admin.notifications.send') }}" method="POST">
+                    @csrf
+                    
+                    <!-- Recipient Selection -->
+                    <div class="mb-4">
+                        <label for="recipient_type" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <i class="fas fa-users mr-2 text-gray-400"></i>Recipients
+                        </label>
+                        <select name="recipient_type" id="recipient_type" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="all">All Users</option>
+                            <option value="active">Active Users (Last 30 days)</option>
+                            <option value="inactive">Inactive Users</option>
+                            <option value="new">New Users (Last 7 days)</option>
+                            <option value="single">Single User</option>
+                        </select>
+                    </div>
+
+                    <!-- Single User Email (shown when Single User is selected) -->
+                    <div class="mb-4" id="single_user_field" style="display: none;">
+                        <label for="user_email" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <i class="fas fa-envelope mr-2 text-gray-400"></i>User Email
+                        </label>
+                        <input type="email" name="user_email" id="user_email" placeholder="user@example.com" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <!-- Notification Title -->
+                    <div class="mb-4">
+                        <label for="notif_title" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <i class="fas fa-heading mr-2 text-gray-400"></i>Notification Title
+                        </label>
+                        <input type="text" name="notif_title" id="notif_title" required placeholder="Important Update" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <!-- Notification Message -->
+                    <div class="mb-4">
+                        <label for="notif_message" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <i class="fas fa-comment mr-2 text-gray-400"></i>Message
+                        </label>
+                        <textarea name="notif_message" id="notif_message" rows="4" required placeholder="Enter your notification message here..." class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+
+                    <!-- Notification Type -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <i class="fas fa-paper-plane mr-2 text-gray-400"></i>Send Via
+                        </label>
+                        <div class="flex gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="send_via[]" value="email" checked class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700">
+                                <span class="ml-2 text-gray-700 dark:text-gray-200">Email</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="send_via[]" value="database" checked class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700">
+                                <span class="ml-2 text-gray-700 dark:text-gray-200">In-App Notification</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Send Notification
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('recipient_type').addEventListener('change', function() {
+                var singleUserField = document.getElementById('single_user_field');
+                if (this.value === 'single') {
+                    singleUserField.style.display = 'block';
+                } else {
+                    singleUserField.style.display = 'none';
+                }
+            });
+        </script>
     </div>
 </div>
 @endsection

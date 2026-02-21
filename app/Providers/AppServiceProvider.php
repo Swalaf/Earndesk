@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Config;
 use App\Models\Transaction;
 use App\Observers\TransactionObserver;
 use App\Services\TaskCreationService;
+use App\Services\TaskService;
+use App\Services\ProfessionalServiceService;
+use App\Services\GrowthService;
 use App\Repositories\TaskRepository;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +33,23 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(TaskRepository::class),
                 $app->make(\App\Services\EarnDeskService::class)
             );
+        });
+
+        // Register new TaskService
+        $this->app->singleton(TaskService::class, function ($app) {
+            return new TaskService(
+                $app->make(\App\Services\EarnDeskService::class)
+            );
+        });
+
+        // Register ProfessionalServiceService
+        $this->app->singleton(ProfessionalServiceService::class, function ($app) {
+            return new ProfessionalServiceService();
+        });
+
+        // Register GrowthService
+        $this->app->singleton(GrowthService::class, function ($app) {
+            return new GrowthService();
         });
     }
 

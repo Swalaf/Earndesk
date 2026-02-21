@@ -56,6 +56,39 @@
                             <span class="text-gray-500 dark:text-gray-400">Joined</span>
                             <span class="font-semibold text-gray-900 dark:text-gray-100">{{ $user->created_at->format('M d, Y') }}</span>
                         </div>
+                        <div class="py-2 border-b border-gray-100 dark:border-dark-700">
+                            <span class="text-gray-500 dark:text-gray-400">Admin Status</span>
+                            <div class="mt-2">
+                                @if($user->is_admin)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400">
+                                    <i class="fas fa-shield-alt mr-1"></i>Admin
+                                </span>
+                                @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400">
+                                    <i class="fas fa-user mr-1"></i>User
+                                </span>
+                                @endif
+                            </div>
+                            @if($user->id !== auth()->id())
+                            <div class="mt-3">
+                                @if($user->is_admin)
+                                <form action="{{ route('admin.users.demote', $user) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-xs px-3 py-1 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-500/30 transition-colors" onclick="return confirm('Are you sure you want to demote this user from admin?')">
+                                        <i class="fas fa-arrow-down mr-1"></i>Demote
+                                    </button>
+                                </form>
+                                @else
+                                <form action="{{ route('admin.users.promote', $user) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-xs px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-500/30 transition-colors" onclick="return confirm('Are you sure you want to promote this user to admin?')">
+                                        <i class="fas fa-arrow-up mr-1"></i>Promote to Admin
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+                            @endif
+                        </div>
                         @if($wallet)
                         <div class="pt-4">
                             <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Wallet</h3>

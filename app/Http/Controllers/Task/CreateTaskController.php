@@ -122,6 +122,11 @@ class CreateTaskController extends Controller
             $response['redirect'] = $result['redirect'];
         }
 
+        // Include required amount if balance was insufficient
+        if (isset($result['required_amount'])) {
+            $response['required_amount'] = $result['required_amount'];
+        }
+
         return response()->json($response, $result['status']);
     }
 
@@ -156,6 +161,61 @@ class CreateTaskController extends Controller
         return response()->json([
             'success' => true,
             'draft' => $draft,
+        ]);
+    }
+
+    /**
+     * Resume task creation after deposit.
+     * 
+     * Called after user deposits money to complete the task creation.
+     * Pre-fills the form with the previously submitted data.
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function resume(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Get stored task creation data from session
+        $storedData = session('task_creation_data');
+        $requiredAmount = session('insufficient_balance_required');
+        
+        // Clear the session data after retrieving
+        session()->forget(['task_creation_data', 'insufficient_balance_required', 'deposit_success_redirect']);
+        
+        // Get categories for the form
+        $categoryConfig = $this->taskCreationService->getCategoryConfig();
+        $categories = TaskCategory::getActiveCategories();
+        
+        // Generate new idempotency token for this attempt
+        $idempotencyToken = $this->taskCreationService->generateIdempotencyToken();
+        $request->session()->put('task_idempotency_token', $idempotencyToken);
+        
+        // Check wallet balance to determine if user can proceed
+        $wallet = $user->wallet;
+        $canProceed = false;
+        $message = '';
+        $prefillData = $storedData;
+        $draftData = null;
+        
+        if ($wallet && $requiredAmount) {
+            $totalBalance = $wallet->withdrawable_balance + $wallet->promo_credit_balance;
+            $canProceed = $totalBalance >= $requiredAmount;
+            $message = $canProceed 
+                ? 'Your deposit was successful! You can now submit your task.'
+                : 'You still need more funds. Required: ₦' . number_format($requiredAmount, 2) . ', Available: ₦' . number_format($totalBalance, 2);
+        }
+        
+        return view('tasks.create', compact(
+            'categories',
+            'categoryConfig',
+            'prefillData',
+            'draftData',
+            'idempotencyToken'
+        ))->with([
+            'resumeMessage' => $message,
+            'canProceed' => $canProceed,
         ]);
     }
 

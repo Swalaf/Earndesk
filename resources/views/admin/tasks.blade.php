@@ -75,7 +75,10 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
                                     <div class="w-16 bg-gray-200 dark:bg-dark-700 rounded-full h-2 mr-2">
-                                        <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ ($task->task_completions_count / $task->quantity) * 100 }}%"></div>
+                                        @php
+                                            $progress = $task->quantity > 0 ? ($task->task_completions_count / $task->quantity) * 100 : 0;
+                                        @endphp
+                                        <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ min($progress, 100) }}%"></div>
                                     </div>
                                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ $task->task_completions_count }}/{{ $task->quantity }}</span>
                                 </div>

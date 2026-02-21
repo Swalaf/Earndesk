@@ -1,14 +1,26 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Task\CreateTaskController;
+use App\Http\Controllers\Task\TaskController as NewTaskController;
+use App\Http\Controllers\ProfessionalServiceController;
+use App\Http\Controllers\GrowthController;
+use App\Http\Controllers\DigitalProductController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StartJourneyController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\EscrowController;
+use App\Http\Controllers\DisputeController;
+use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\BoostController;
+use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\HealthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +29,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Health check endpoint (for monitoring)
+Route::get('/health', [HealthController::class, 'check'])->name('health');
+
 // Public routes
 Route::get('/', function () {
     return view('landing');
@@ -24,6 +39,11 @@ Route::get('/', function () {
 
 // Short referral link - stores code in session then redirects to register
 Route::get('/ref/{code}', [ReferralController::class, 'redirectWithCode'])->name('ref.redirect');
+
+// Google OAuth Routes
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
@@ -50,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Wallet routes
     Route::prefix('wallet')->name('wallet.')->group(function () {
         Route::get('/', [WalletController::class, 'index'])->name('index');
+        Route::get('/escrow', [WalletController::class, 'escrow'])->name('escrow');
         Route::get('/activate', [WalletController::class, 'activate'])->name('activate');
         Route::post('/activate', [WalletController::class, 'processActivation'])->name('activate.process');
         Route::get('/deposit', [WalletController::class, 'deposit'])->name('deposit');
@@ -65,6 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('tasks')->name('tasks.')->middleware(['task.creation.gate'])->group(function () {
         // New Create Task Module Routes
         Route::get('/create/new', [CreateTaskController::class, 'showCreateForm'])->name('create.new');
+        Route::get('/create', function() { return redirect()->route('tasks.create.new'); })->name('create');
         Route::post('/create/store', [CreateTaskController::class, 'store'])->name('create.store');
         Route::post('/create/save-draft', [CreateTaskController::class, 'saveDraft'])->name('create.save-draft');
         Route::get('/create/get-draft', [CreateTaskController::class, 'getDraft'])->name('create.get-draft');
@@ -73,10 +95,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/create/validate', [CreateTaskController::class, 'validateTaskData'])->name('create.validate');
         Route::get('/create/calculate-cost', [CreateTaskController::class, 'calculateCost'])->name('create.calculate-cost');
         
-        // Original task routes
+        // Original task routes - redirect to new create flow
         Route::get('/', [TaskController::class, 'index'])->name('index');
-        Route::get('/create', [TaskController::class, 'create'])->name('create');
-        Route::get('/create/resume', [TaskController::class, 'resumeCreate'])->name('create.resume');
+        // /create route is defined above in new create module
+        Route::get('/create/resume', [CreateTaskController::class, 'resume'])->name('create.resume');
         Route::get('/create/saved', [TaskController::class, 'savedCreate'])->name('create.saved');
         Route::post('/create/pay', [TaskController::class, 'payCreate'])->name('create.pay');
         Route::post('/create/save-draft', [TaskController::class, 'saveDraft'])->name('create.save-draft');
@@ -102,6 +124,41 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/track-platform-click', [TaskController::class, 'trackPlatformClick'])->name('track-platform-click');
     });
 
+    // NEW TASK SYSTEM - Escrow-based Task Management
+    Route::prefix('new-tasks')->name('new-tasks.')->group(function () {
+        // Browse available tasks (worker view)
+        Route::get('/', [NewTaskController::class, 'index'])->name('index');
+        
+        // Task creation (client view)
+        Route::get('/create', [NewTaskController::class, 'create'])->name('create');
+        Route::post('/store', [NewTaskController::class, 'store'])->name('store');
+        
+        // Task funding - moves funds from wallet to escrow
+        Route::post('/{task}/fund', [NewTaskController::class, 'fundTask'])->name('fund');
+        
+        // My tasks (client view - tasks I created)
+        Route::get('/my-tasks', [NewTaskController::class, 'myTasks'])->name('my-tasks');
+        
+        // Work tasks (worker view - available tasks to work on)
+        Route::get('/work', [NewTaskController::class, 'workTasks'])->name('work');
+        
+        // Task details
+        Route::get('/{task}', [NewTaskController::class, 'show'])->name('show');
+        
+        // Worker submission
+        Route::post('/{task}/submit', [NewTaskController::class, 'submitWork'])->name('submit');
+        
+        // Submission management (client)
+        Route::get('/{task}/submissions', [NewTaskController::class, 'submissions'])->name('submissions');
+        Route::post('/{task}/submissions/{submission}/approve', [NewTaskController::class, 'approveSubmission'])->name('submissions.approve');
+        Route::post('/{task}/submissions/{submission}/reject', [NewTaskController::class, 'rejectSubmission'])->name('submissions.reject');
+        
+        // Task actions
+        Route::post('/{task}/pause', [NewTaskController::class, 'pauseTask'])->name('pause');
+        Route::post('/{task}/resume', [NewTaskController::class, 'resumeTask'])->name('resume');
+        Route::post('/{task}/cancel', [NewTaskController::class, 'cancelTask'])->name('cancel');
+    });
+
     // Admin routes
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
@@ -116,6 +173,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/currency', [\App\Http\Controllers\SettingsController::class, 'group'])->name('settings.currency')->defaults('group', 'currency');
         Route::get('/settings/notifications', [\App\Http\Controllers\SettingsController::class, 'notificationMessages'])->name('settings.notifications');
         Route::post('/settings/test-email', [\App\Http\Controllers\SettingsController::class, 'testEmail'])->name('settings.test-email');
+        Route::post('/notifications/send', [\App\Http\Controllers\AdminController::class, 'sendNotification'])->name('notifications.send');
         Route::get('/settings/notification', [\App\Http\Controllers\SettingsController::class, 'group'])->name('settings.notification')->defaults('group', 'notification');
         Route::get('/settings/security', [\App\Http\Controllers\SettingsController::class, 'group'])->name('settings.security')->defaults('group', 'security');
         Route::get('/settings/cron', [\App\Http\Controllers\SettingsController::class, 'group'])->name('settings.cron')->defaults('group', 'cron');
@@ -133,6 +191,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/audit/logs', [\App\Http\Controllers\SettingsController::class, 'auditLogs'])->name('settings.audit');
         Route::post('/settings/initialize', [\App\Http\Controllers\SettingsController::class, 'initializeDefaults'])->name('settings.initialize');
         Route::post('/settings/clear-cache', [\App\Http\Controllers\SettingsController::class, 'clearCache'])->name('settings.clear-cache');
+
+
 
         // Analytics
         Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
@@ -162,6 +222,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Cron jobs
     Route::post('/cron', [AdminController::class, 'runCronJobs'])->name('cron');
+
+    // Chat/Messaging routes
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/{conversation}', [ChatController::class, 'show'])->name('show');
+        Route::post('/message', [ChatController::class, 'store'])->name('message');
+        Route::post('/start', [ChatController::class, 'startConversation'])->name('start');
+        Route::get('/unread', [ChatController::class, 'getUnreadCount'])->name('unread');
+        Route::post('/{conversation}/read', [ChatController::class, 'markAsRead'])->name('read');
+        Route::post('/{conversation}/close', [ChatController::class, 'closeConversation'])->name('close');
+    });
 });
 
 // Additional Admin Routes
@@ -173,6 +244,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::get('/users/{user}', [AdminController::class, 'userDetails'])->name('user-details');
     Route::post('/users/{user}/suspend', [AdminController::class, 'suspendUser'])->name('users.suspend');
+    Route::post('/users/{user}/promote', [AdminController::class, 'promoteToAdmin'])->name('users.promote');
+    Route::post('/users/{user}/demote', [AdminController::class, 'demoteFromAdmin'])->name('users.demote');
 
     // Task management (admin)
     Route::get('/tasks', [AdminController::class, 'tasks'])->name('tasks');
@@ -183,6 +256,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Analytics
     Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
+
+    // Marketplace Management
+    Route::get('/marketplace', [\App\Http\Controllers\Admin\MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('/marketplace/create', [\App\Http\Controllers\Admin\MarketplaceController::class, 'create'])->name('marketplace.create');
+    Route::post('/marketplace', [\App\Http\Controllers\Admin\MarketplaceController::class, 'store'])->name('marketplace.store');
+    Route::get('/marketplace/{category}/edit', [\App\Http\Controllers\Admin\MarketplaceController::class, 'edit'])->name('marketplace.edit');
+    Route::put('/marketplace/{category}', [\App\Http\Controllers\Admin\MarketplaceController::class, 'update'])->name('marketplace.update');
+    Route::delete('/marketplace/{category}', [\App\Http\Controllers\Admin\MarketplaceController::class, 'destroy'])->name('marketplace.destroy');
+    Route::post('/marketplace/{category}/toggle', [\App\Http\Controllers\Admin\MarketplaceController::class, 'toggle'])->name('marketplace.toggle');
+    Route::post('/marketplace/bulk-action', [\App\Http\Controllers\Admin\MarketplaceController::class, 'bulkAction'])->name('marketplace.bulk-action');
+
+    // Feature Toggles
+    Route::get('/marketplace/features', [\App\Http\Controllers\Admin\MarketplaceController::class, 'features'])->name('marketplace.features');
+    Route::post('/marketplace/features/toggle', [\App\Http\Controllers\Admin\MarketplaceController::class, 'toggleFeature'])->name('marketplace.toggle-feature');
 
     // Revenue reporting (admin)
     Route::get('/revenue', [\App\Http\Controllers\Admin\RevenueController::class, 'index'])->name('revenue.index');
@@ -220,6 +307,211 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/activations', [AdminController::class, 'activations'])->name('activations');
     Route::get('/activations/{activation}', [AdminController::class, 'activationDetails'])->name('activations.show');
     Route::post('/activations/{activation}/process', [AdminController::class, 'processActivation'])->name('activations.process');
+
+    // Professional Services management
+    Route::get('/professional-services', [AdminController::class, 'professionalServices'])->name('professional-services');
+    Route::get('/professional-services/{service}', [AdminController::class, 'professionalServiceDetails'])->name('professional-services.show');
+    Route::post('/professional-services/{service}/approve', [AdminController::class, 'approveProfessionalService'])->name('professional-services.approve');
+    Route::post('/professional-services/{service}/reject', [AdminController::class, 'rejectProfessionalService'])->name('professional-services.reject');
+
+    // Growth Listings management
+    Route::get('/growth-listings', [AdminController::class, 'growthListings'])->name('growth-listings');
+    Route::get('/growth-listings/{listing}', [AdminController::class, 'growthListingDetails'])->name('growth-listings.show');
+    Route::post('/growth-listings/{listing}/approve', [AdminController::class, 'approveGrowthListing'])->name('growth-listings.approve');
+    Route::post('/growth-listings/{listing}/reject', [AdminController::class, 'rejectGrowthListing'])->name('growth-listings.reject');
+
+    // Digital Products management
+    Route::get('/digital-products', [AdminController::class, 'digitalProducts'])->name('digital-products');
+    Route::get('/digital-products/{product}', [AdminController::class, 'digitalProductDetails'])->name('digital-products.show');
+    Route::post('/digital-products/{product}/approve', [AdminController::class, 'approveDigitalProduct'])->name('digital-products.approve');
+    Route::post('/digital-products/{product}/reject', [AdminController::class, 'rejectDigitalProduct'])->name('digital-products.reject');
+});
+
+// Professional Services (Hire) - Available to all authenticated users
+Route::prefix('services')->name('professional-services.')->group(function () {
+    // Public - Browse services
+    Route::get('/', [ProfessionalServiceController::class, 'index'])->name('index');
+    Route::get('/search', [ProfessionalServiceController::class, 'index'])->name('search');
+    
+    // Service provider directory
+    Route::get('/directory', [ProfessionalServiceController::class, 'directory'])->name('directory');
+    Route::get('/provider/{userId}', [ProfessionalServiceController::class, 'providerProfile'])->name('provider-profile');
+    
+    // Protected routes - require authentication
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Create service
+        Route::get('/create', [ProfessionalServiceController::class, 'create'])->name('create');
+        Route::post('/store', [ProfessionalServiceController::class, 'store'])->name('store');
+        
+        // My services
+        Route::get('/my-services', [ProfessionalServiceController::class, 'myServices'])->name('my-services');
+        
+        // Order
+        Route::post('/{service}/order', [ProfessionalServiceController::class, 'createOrder'])->name('order');
+        
+        // My orders (buyer)
+        Route::get('/orders', [ProfessionalServiceController::class, 'myOrders'])->name('orders.index');
+        Route::get('/orders/{order}', [ProfessionalServiceController::class, 'showOrder'])->name('orders.show');
+        Route::post('/orders/{order}/approve', [ProfessionalServiceController::class, 'approveOrder'])->name('orders.approve');
+        Route::post('/orders/{order}/revision', [ProfessionalServiceController::class, 'requestRevision'])->name('orders.revision');
+        Route::post('/orders/{order}/cancel', [ProfessionalServiceController::class, 'cancelOrder'])->name('orders.cancel');
+        Route::post('/orders/{order}/message', [ProfessionalServiceController::class, 'sendMessage'])->name('orders.message');
+        Route::post('/orders/{order}/review', [ProfessionalServiceController::class, 'leaveReview'])->name('orders.review');
+        
+        // My sales (seller)
+        Route::get('/sales', [ProfessionalServiceController::class, 'mySales'])->name('sales.index');
+        Route::post('/orders/{order}/deliver', [ProfessionalServiceController::class, 'deliverOrder'])->name('orders.deliver');
+        
+        // Provider profile
+        Route::get('/profile/edit', [ProfessionalServiceController::class, 'editProfile'])->name('edit-profile');
+        Route::put('/profile', [ProfessionalServiceController::class, 'updateProfile'])->name('update-profile');
+    });
+    
+    // Single service view (public)
+    Route::get('/{service}', [ProfessionalServiceController::class, 'show'])->name('show');
+});
+
+// Growth Marketplace - Available to all authenticated users
+Route::prefix('growth')->name('growth.')->group(function () {
+    // Public - Browse
+    Route::get('/', [GrowthController::class, 'index'])->name('index');
+    
+    // Protected routes - require authentication
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Create listing - MUST be before /{type} route
+        Route::get('/create', [GrowthController::class, 'create'])->name('create');
+        Route::post('/store', [GrowthController::class, 'store'])->name('store');
+        
+        // My listings
+        Route::get('/my-listings', [GrowthController::class, 'myListings'])->name('my-listings');
+        
+        // Order
+        Route::post('/{listing}/order', [GrowthController::class, 'createOrder'])->name('order');
+        
+        // Orders (buyer)
+        Route::get('/orders', [GrowthController::class, 'myOrders'])->name('orders.index');
+        Route::get('/orders/{order}', [GrowthController::class, 'showOrder'])->name('orders.show');
+        Route::post('/orders/{order}/approve', [GrowthController::class, 'approveOrder'])->name('orders.approve');
+        Route::post('/orders/{order}/revision', [GrowthController::class, 'requestRevision'])->name('orders.revision');
+        Route::post('/orders/{order}/cancel', [GrowthController::class, 'cancelOrder'])->name('orders.cancel');
+        
+        // Sales (seller)
+        Route::get('/sales', [GrowthController::class, 'mySales'])->name('sales.index');
+        Route::post('/orders/{order}/proof', [GrowthController::class, 'submitProof'])->name('orders.proof');
+    });
+    
+    // Type filter - MUST be after /create route
+    Route::get('/{type}', [GrowthController::class, 'index'])->name('type');
+    
+    // Single listing view (public)
+    Route::get('/listing/{listing}', [GrowthController::class, 'show'])->name('show');
+});
+
+// Digital Products Marketplace
+Route::prefix('products')->name('digital-products.')->group(function () {
+    // Public - Browse
+    Route::get('/', [DigitalProductController::class, 'index'])->name('index');
+    Route::get('/featured', [DigitalProductController::class, 'featured'])->name('featured');
+    
+    // Protected routes - require authentication
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Create product
+        Route::get('/create', [DigitalProductController::class, 'create'])->name('create');
+        Route::post('/store', [DigitalProductController::class, 'store'])->name('store');
+        
+        // My products
+        Route::get('/my-products', [DigitalProductController::class, 'myProducts'])->name('my-products');
+        Route::get('/my-products/{product}/edit', [DigitalProductController::class, 'edit'])->name('edit');
+        Route::put('/my-products/{product}', [DigitalProductController::class, 'update'])->name('update');
+        Route::delete('/my-products/{product}', [DigitalProductController::class, 'destroy'])->name('destroy');
+        
+        // Purchase
+        Route::post('/{product}/purchase', [DigitalProductController::class, 'purchase'])->name('purchase');
+        
+        // My purchases
+        Route::get('/purchases', [DigitalProductController::class, 'myPurchases'])->name('my-purchases');
+        Route::get('/orders/{order}/download', [DigitalProductController::class, 'download'])->name('download');
+        
+        // Reviews
+        Route::post('/{product}/review', [DigitalProductController::class, 'review'])->name('review');
+    });
+    
+    // Single product view (public)
+    Route::get('/{product}', [DigitalProductController::class, 'show'])->name('show');
+});
+
+// Job Board
+Route::prefix('jobs')->name('jobs.')->group(function () {
+    // Public - Browse
+    Route::get('/', [JobController::class, 'index'])->name('index');
+    
+    // Protected routes - require authentication
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Create job
+        Route::get('/create', [JobController::class, 'create'])->name('create');
+        Route::post('/store', [JobController::class, 'store'])->name('store');
+        
+        // My jobs
+        Route::get('/my-jobs', [JobController::class, 'myJobs'])->name('my-jobs');
+        Route::get('/{job}/edit', [JobController::class, 'edit'])->name('edit');
+        Route::put('/{job}', [JobController::class, 'update'])->name('update');
+        Route::delete('/{job}', [JobController::class, 'destroy'])->name('destroy');
+        Route::post('/{job}/close', [JobController::class, 'close'])->name('close');
+        
+        // Applications
+        Route::get('/applications', [JobController::class, 'applications'])->name('applications');
+        Route::post('/{job}/apply', [JobController::class, 'apply'])->name('apply');
+        Route::post('/applications/{application}/withdraw', [JobController::class, 'withdrawApplication'])->name('withdraw');
+        Route::post('/applications/{application}/hire', [JobController::class, 'hireApplicant'])->name('hire');
+        Route::post('/applications/{application}/reject', [JobController::class, 'rejectApplicant'])->name('reject');
+    });
+    
+    // Single job view (public)
+    Route::get('/{job}', [JobController::class, 'show'])->name('show');
+});
+
+// Escrow Management
+Route::prefix('escrow')->name('escrow.')->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/', [EscrowController::class, 'index'])->name('index');
+        Route::get('/{transaction}', [EscrowController::class, 'show'])->name('show');
+        Route::post('/{transaction}/release', [EscrowController::class, 'release'])->name('release');
+        Route::post('/{transaction}/cancel', [EscrowController::class, 'cancel'])->name('cancel');
+    });
+});
+
+// Disputes
+Route::prefix('disputes')->name('disputes.')->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/', [DisputeController::class, 'index'])->name('index');
+        Route::get('/create', [DisputeController::class, 'create'])->name('create');
+        Route::post('/store', [DisputeController::class, 'store'])->name('store');
+        Route::get('/{dispute}', [DisputeController::class, 'show'])->name('show');
+        Route::post('/{dispute}/respond', [DisputeController::class, 'respond'])->name('respond');
+        Route::post('/{dispute}/evidence', [DisputeController::class, 'submitEvidence'])->name('evidence');
+    });
+});
+
+// Verification Center
+Route::prefix('verification')->name('verification.')->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/', [VerificationController::class, 'index'])->name('index');
+        Route::post('/email', [VerificationController::class, 'verifyEmail'])->name('email');
+        Route::post('/phone', [VerificationController::class, 'verifyPhone'])->name('phone');
+        Route::post('/phone/verify-code', [VerificationController::class, 'verifyPhoneCode'])->name('phone.verify-code');
+        Route::post('/identity', [VerificationController::class, 'verifyIdentity'])->name('identity');
+        Route::post('/address', [VerificationController::class, 'verifyAddress'])->name('address');
+    });
+});
+
+// Boost & Promotion
+Route::prefix('boost')->name('boost.')->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/', [BoostController::class, 'index'])->name('index');
+        Route::post('/purchase', [BoostController::class, 'purchase'])->name('purchase');
+        Route::post('/activate', [BoostController::class, 'activate'])->name('activate');
+        Route::post('/deactivate', [BoostController::class, 'deactivate'])->name('deactivate');
+    });
 });
 
 // CSRF token endpoint for AJAX keep-alives

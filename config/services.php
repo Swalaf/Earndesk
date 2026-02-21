@@ -30,4 +30,40 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google OAuth
+    |--------------------------------------------------------------------------
+    |
+    | Credentials for Google OAuth authentication. Enable Google login
+    | by setting GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your .env
+    | or configure in admin settings.
+    |
+    */
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
+        'enabled' => env('GOOGLE_AUTH_ENABLED', !empty(env('GOOGLE_CLIENT_ID')) && !empty(env('GOOGLE_CLIENT_SECRET'))),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | TurboSMTP
+    |--------------------------------------------------------------------------
+    |
+    | Credentials for TurboSMTP email delivery service.
+    | Configure in admin settings or .env file.
+    |
+    */
+    'turbosmtp' => [
+        'server' => env('TURBOSMTP_SERVER', 'pro.turbo-smtp.com'),
+        'port' => env('TURBOSMTP_PORT', 587),
+        'username' => env('TURBOSMTP_USERNAME'),
+        'password' => env('TURBOSMTP_PASSWORD'),
+        'from_address' => env('TURBOSMTP_FROM_ADDRESS', env('MAIL_FROM_ADDRESS')),
+        'from_name' => env('TURBOSMTP_FROM_NAME', env('MAIL_FROM_NAME')),
+        'enabled' => env('TURBOSMTP_ENABLED', !empty(env('TURBOSMTP_USERNAME')) && !empty(env('TURBOSMTP_PASSWORD'))),
+    ],
+
 ];

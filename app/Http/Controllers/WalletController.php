@@ -9,6 +9,7 @@ use App\Models\WalletLedger;
 use App\Models\User;
 use App\Models\Referral;
 use App\Services\EarnDeskService;
+use App\Services\RevenueAggregator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -205,6 +206,12 @@ class WalletController extends Controller
             'escrow_balance' => 0,
         ]);
 
+        // Check for required amount from task creation redirect
+        $requiredAmount = $request->query('required');
+        if ($requiredAmount) {
+            session(['insufficient_balance_required' => $requiredAmount]);
+        }
+
         // Handle GET request - show deposit form
         if ($request->isMethod('GET')) {
             return view('wallet.deposit', compact('wallet'));
@@ -249,12 +256,16 @@ class WalletController extends Controller
             'amount' => $request->amount,
         ]);
 
+        // Auto-aggregate revenue for today
+        RevenueAggregator::aggregateForDate(now()->toDateString());
+
         // Check if user has a pending task creation (redirect after deposit success)
         $redirectRoute = session('deposit_success_redirect');
         
         if ($redirectRoute && $redirectRoute === route('tasks.create.resume')) {
-            // Clear the deposit context but keep form data for pre-filling
-            session()->forget('deposit_success_redirect', 'insufficient_balance_required');
+            // Don't clear the task_creation_data here - the resume method needs it
+            // Only clear the redirect flag
+            session()->forget('deposit_success_redirect');
             
             return redirect($redirectRoute)
                 ->with('success', '💰 Deposit of ₦' . number_format($request->amount, 2) . ' successful! Your form is ready to submit.');
@@ -407,5 +418,23 @@ class WalletController extends Controller
 
         return redirect()->route('wallet.index')
             ->with('success', '₦' . number_format($request->amount, 2) . ' promo credit added!');
+    }
+
+    /**
+     * Display escrow transactions
+     */
+    public function escrow()
+    {
+        $user = auth()->user();
+        
+        // Get escrow transactions where user is payer or payee
+        $escrowTransactions = \App\Models\EscrowTransaction::where('payer_id', $user->id)
+            ->orWhere('payee_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+        
+        return view('escrow.index', [
+            'transactions' => $escrowTransactions,
+        ]);
     }
 }

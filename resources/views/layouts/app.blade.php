@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? config('app.name', 'Earn Desk') }}</title>
+    
+    {{-- Favicon --}}
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Critical inline CSS: minimal styles for header, nav and main to avoid FOUC before full CSS loads. --}}
     <style>
@@ -263,17 +267,17 @@
         }
         
         .dark .toggle-slider {
-            background-color: #1f2937;
-            border: 2px solid #6b7280;
+            background-color: #374151;
+            border: 2px solid #a78bfa;
         }
         
         .dark .toggle-slider:hover {
-            border-color: #9ca3af;
+            border-color: #c4b5fd;
         }
         
         .dark input:checked + .toggle-slider {
             background-color: #3b82f6;
-            border-color: #60a5fa;
+            border-color: #bfdbfe;
         }
 
         /* Professional Tooltips */
@@ -561,74 +565,130 @@
         })();
     </script>
 </head>
-<body class="font-body bg-dark-50 dark:bg-dark-950 text-gray-900 dark:text-gray-100 min-h-screen">
+<body class="font-body bg-dark-950 text-gray-100 min-h-screen">
     <div class="min-h-screen flex flex-col">
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden" onclick="closeMobileMenu()"></div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed top-0 left-0 h-full w-72 bg-dark-900 z-50 transform -translate-x-full transition-transform duration-300 md:hidden">
+            <div class="p-4 border-b border-dark-700">
+                <div class="flex items-center justify-between">
+                    <a href="{{ route('dashboard') }}" class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                            <i class="fas fa-coins text-white text-lg"></i>
+                        </div>
+                        <span class="font-bold text-xl text-white">EarnDesk</span>
+                    </a>
+                    <button onclick="closeMobileMenu()" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-indigo-500/10 text-indigo-400' : 'text-gray-400 hover:text-white hover:bg-dark-800' }} transition-all">
+                    <i class="fas fa-home mr-3 w-5"></i>Dashboard
+                </a>
+                <a href="{{ route('tasks.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('tasks.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-gray-400 hover:text-white hover:bg-dark-800' }} transition-all">
+                    <i class="fas fa-tasks mr-3 w-5"></i>Tasks
+                </a>
+                <a href="{{ route('wallet.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('wallet.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-gray-400 hover:text-white hover:bg-dark-800' }} transition-all">
+                    <i class="fas fa-wallet mr-3 w-5"></i>Wallet
+                </a>
+                @if(Auth::check() && Auth::user()->is_admin)
+                <a href="{{ route('admin.index') }}" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800 transition-all">
+                    <i class="fas fa-cog mr-3 w-5"></i>Admin
+                </a>
+                @endif
+            </nav>
+            @auth
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-dark-700">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-white">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-gray-400">
+                            <i class="fas fa-naira-sign mr-0.5"></i>{{ number_format(Auth::user()->wallet ? (Auth::user()->wallet->withdrawable_balance + Auth::user()->wallet->promo_credit_balance) : 0, 2) }}
+                        </p>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center justify-center px-4 py-2 rounded-lg bg-dark-800 text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </form>
+            </div>
+            @endauth
+        </div>
+
         <!-- Navigation (fixed to top) -->
-        <header class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-dark-900 border-b border-gray-200 dark:border-dark-700 backdrop-blur-lg bg-white/80 dark:bg-dark-900/80">
+        <header class="fixed top-0 left-0 right-0 z-50 bg-dark-900/95 border-b border-dark-700 backdrop-blur-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800" onclick="openMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
                     <!-- Logo -->
                     <div class="flex items-center">
                         <a href="{{ route('dashboard') }}" class="flex items-center group">
-                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-ind30 group-hover:shadow-indigo-igo-500/500/50 transition-all">
+                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all">
                                 <i class="fas fa-coins text-white text-lg"></i>
                             </div>
-                            <span class="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">EarnDesk</span>
+                            <span class="font-bold text-xl bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">EarnDesk</span>
                         </a>
                     </div>
 
                     <!-- Navigation -->
                     <nav class="hidden md:flex space-x-1">
-                        <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-dark-800' }} transition-all">
+                        <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-indigo-500/10 text-indigo-400' : 'text-gray-400 hover:text-indigo-400 hover:bg-dark-800' }} transition-all">
                             <i class="fas fa-home mr-2"></i>Dashboard
                         </a>
-                        <a href="{{ route('tasks.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('tasks.*') ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-dark-800' }} transition-all">
+                        <a href="{{ route('tasks.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('tasks.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-gray-400 hover:text-indigo-400 hover:bg-dark-800' }} transition-all">
                             <i class="fas fa-tasks mr-2"></i>Tasks
                         </a>
-                        <a href="{{ route('wallet.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('wallet.*') ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-dark-800' }} transition-all">
+                        <a href="{{ route('wallet.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('wallet.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-gray-400 hover:text-indigo-400 hover:bg-dark-800' }} transition-all">
                             <i class="fas fa-wallet mr-2"></i>Wallet
                         </a>
                         @if(Auth::check() && Auth::user()->is_admin)
-                        <a href="{{ route('admin.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-dark-800 transition-all">
+                        <a href="{{ route('admin.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-indigo-400 hover:bg-dark-800 transition-all">
                             <i class="fas fa-cog mr-2"></i>Admin
                         </a>
                         @endif
                     </nav>
 
                     <!-- Right Side -->
-                    <div class="flex items-center space-x-4">
-                        <!-- Theme Toggle -->
-                        <button id="theme-toggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700 text-gray-600 dark:text-gray-400 transition-all shadow-sm hover:shadow-md" title="Toggle theme">
-                            <i class="fas fa-sun dark:hidden text-lg"></i>
-                            <i class="fas fa-moon hidden dark:block text-lg"></i>
-                        </button>
-                        
+                    <div class="flex items-center space-x-3 md:space-x-4">
                         @auth
                             @php
                                 $authUser = Auth::user();
                                 $wallet = $authUser->wallet ?? null;
                                 $balance = $wallet ? ($wallet->withdrawable_balance + $wallet->promo_credit_balance) : 0;
                             @endphp
-                            <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2 md:space-x-3">
                                 <div class="hidden sm:block text-right">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $authUser->name }}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-end">
+                                    <p class="text-sm font-semibold text-white">{{ $authUser->name }}</p>
+                                    <p class="text-xs text-gray-400 flex items-center justify-end">
                                         <i class="fas fa-naira-sign mr-0.5"></i>{{ number_format($balance, 2) }}
                                     </p>
                                 </div>
-                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">
+                                <div class="h-9 w-9 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                                 </div>
-                                <form method="POST" action="{{ route('logout') }}" class="inline">
+                                <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
                                     @csrf
-                                    <button type="submit" class="p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-all shadow-sm hover:shadow-md" title="Logout">
+                                    <button type="submit" class="p-2 md:p-2.5 rounded-xl bg-dark-800 hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-all" title="Logout">
                                         <i class="fas fa-sign-out-alt"></i>
                                     </button>
                                 </form>
                             </div>
                         @else
-                            <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">Log in</a>
-                            <a href="{{ route('register') }}" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-medium transition-all shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50">Get Started</a>
+                            <a href="{{ route('login') }}" class="px-3 md:px-4 py-2 text-sm font-medium text-gray-400 hover:text-indigo-400 transition-all">Log in</a>
+                            <a href="{{ route('register') }}" class="px-4 md:px-5 py-2 md:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-medium transition-all shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50">Get Started</a>
                         @endauth
                     </div>
                 </div>
@@ -638,57 +698,57 @@
         <!-- Alert messages -->
         <div id="flash-messages" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
             @if(session('success'))
-            <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-100 text-green-700 flex justify-between items-start">
+            <div class="mb-4 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 flex justify-between items-start">
                 <div class="flex items-start space-x-3">
-                    <i class="fas fa-check-circle text-green-600 mt-1"></i>
+                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
                     <div>
                         <p class="font-semibold">{{ session('success') }}</p>
                     </div>
                 </div>
-                <button onclick="this.closest('.mb-4').remove()" class="text-green-700 hover:text-green-900 ml-4"><i class="fas fa-times"></i></button>
+                <button onclick="this.closest('.mb-4').remove()" class="text-green-400 hover:text-green-300 ml-4"><i class="fas fa-times"></i></button>
             </div>
             @endif
 
             @if(session('error'))
-            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-100 text-red-700 flex justify-between items-start">
+            <div class="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex justify-between items-start">
                 <div class="flex items-start space-x-3">
-                    <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                    <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
                     <div>
                         <p class="font-semibold">{{ session('error') }}</p>
                     </div>
                 </div>
-                <button onclick="this.closest('.mb-4').remove()" class="text-red-700 hover:text-red-900 ml-4"><i class="fas fa-times"></i></button>
+                <button onclick="this.closest('.mb-4').remove()" class="text-red-400 hover:text-red-300 ml-4"><i class="fas fa-times"></i></button>
             </div>
             @endif
 
             @if(session('warning'))
-            <div class="mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-100 text-yellow-700 flex justify-between items-start">
+            <div class="mb-4 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 flex justify-between items-start">
                 <div class="flex items-start space-x-3">
-                    <i class="fas fa-exclamation-triangle text-yellow-600 mt-1"></i>
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
                     <div>
                         <p class="font-semibold">{{ session('warning') }}</p>
                     </div>
                 </div>
-                <button onclick="this.closest('.mb-4').remove()" class="text-yellow-700 hover:text-yellow-900 ml-4"><i class="fas fa-times"></i></button>
+                <button onclick="this.closest('.mb-4').remove()" class="text-yellow-400 hover:text-yellow-300 ml-4"><i class="fas fa-times"></i></button>
             </div>
             @endif
 
             @if(session('info'))
-            <div class="mb-4 p-4 rounded-lg bg-blue-50 border border-blue-100 text-blue-700 flex justify-between items-start">
+            <div class="mb-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex justify-between items-start">
                 <div class="flex items-start space-x-3">
-                    <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                    <i class="fas fa-info-circle text-blue-500 mt-1"></i>
                     <div>
                         <p class="font-semibold">{{ session('info') }}</p>
                     </div>
                 </div>
-                <button onclick="this.closest('.mb-4').remove()" class="text-blue-700 hover:text-blue-900 ml-4"><i class="fas fa-times"></i></button>
+                <button onclick="this.closest('.mb-4').remove()" class="text-blue-400 hover:text-blue-300 ml-4"><i class="fas fa-times"></i></button>
             </div>
             @endif
 
             @if($errors->any())
-            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-100 text-red-700">
+            <div class="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
                 <div class="flex items-start space-x-3">
-                    <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                    <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
                     <div>
                         <p class="font-semibold">Please fix the following errors:</p>
                         <ul class="mt-2 list-disc list-inside text-sm">
@@ -708,37 +768,34 @@
         </main>
         
         <!-- Footer -->
-        <footer class="bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-700 py-6 mt-auto">
+        <footer class="bg-dark-900 border-t border-dark-700 py-4 md:py-6 mt-auto">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="flex items-center mb-4 md:mb-0">
+                    <div class="flex items-center mb-3 md:mb-0">
                         <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-2">
                             <i class="fas fa-coins text-white text-sm"></i>
                         </div>
-                        <span class="font-bold text-gray-900 dark:text-white">EarnDesk</span>
+                        <span class="font-bold text-white">EarnDesk</span>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">© 2024 EarnDesk. All rights reserved.</p>
+                    <p class="text-sm text-gray-500">© 2024 EarnDesk. All rights reserved.</p>
                 </div>
             </div>
         </footer>
     </div>
 
     <script>
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('theme-toggle');
+        // Mobile menu functionality
+        function openMobileMenu() {
+            document.getElementById('mobile-menu').classList.remove('-translate-x-full');
+            document.getElementById('mobile-menu-overlay').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
         
-        themeToggle.addEventListener('click', function() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-
-        // Load compiled app JS (Alpine, etc.) then initialize icons
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('-translate-x-full');
+            document.getElementById('mobile-menu-overlay').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
     </script>
 
     {{-- Compiled application JS (Alpine, etc.). Use mix to reference built asset. --}}

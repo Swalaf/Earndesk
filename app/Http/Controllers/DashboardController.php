@@ -9,6 +9,7 @@ use App\Models\TaskCompletion;
 use App\Models\TaskBundle;
 use App\Models\Badge;
 use App\Models\Referral;
+use App\Services\EarnDeskService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,19 +65,40 @@ class DashboardController extends Controller
             ->where('is_activated', true)
             ->count();
 
-        // Available tasks for workers
+        // Ensure permanent referral task exists and always show it at the top
+        $referralTask = EarnDeskService::ensurePermanentReferralTask();
+        
+        // Available tasks for workers - always show referral task at the top
         $availableTasks = [];
-        if ($isActivated && $user->wallet->withdrawable_balance + $user->wallet->promo_credit_balance <= 0) {
-            // User needs to earn, show available tasks
-            $availableTasks = Task::active()
-                ->where('user_id', '!=', $user->id)
-                ->whereDoesntHave('completions', function ($query) use ($user) {
+        
+        // Get regular available tasks
+        $regularTasksQuery = Task::active()
+            ->where('user_id', '!=', $user->id)
+            ->where('is_permanent_referral', false);
+        
+        if ($wallet && $isActivated) {
+            $hasLowBalance = $user->wallet->withdrawable_balance + $user->wallet->promo_credit_balance <= 0;
+            if ($hasLowBalance) {
+                // User needs to earn, show more available tasks
+                $regularTasks = $regularTasksQuery->whereDoesntHave('completions', function ($query) use ($user) {
                     $query->where('user_id', $user->id)
                         ->whereIn('status', ['pending', 'approved']);
-                })
-                ->take(5)
-                ->get();
+                })->take(4)->get();
+            } else {
+                // User has balance, still show referral task but fewer regular tasks
+                $regularTasks = $regularTasksQuery->whereDoesntHave('completions', function ($query) use ($user) {
+                    $query->where('user_id', $user->id)
+                        ->whereIn('status', ['pending', 'approved']);
+                })->take(2)->get();
+            }
+        } else {
+            $regularTasks = collect();
         }
+        
+        // Combine referral task with regular tasks (referral task first)
+        $availableTasks = $referralTask 
+            ? collect([$referralTask])->concat($regularTasks)
+            : $regularTasks;
 
         // Featured bundles
         $featuredBundles = TaskBundle::where('is_active', true)
@@ -102,6 +124,7 @@ class DashboardController extends Controller
             'referrals',
             'activatedReferrals',
             'availableTasks',
+            'referralTask',
             'featuredBundles',
             'myTasks'
         ));
@@ -145,11 +168,9 @@ class DashboardController extends Controller
         // Client stats
         $stats['tasks_created'] = Task::where('user_id', $user->id)->count();
 
-        // Referral stats
+        // Referral stats - use actual sum of reward_earned like ReferralController
         $stats['total_referrals'] = Referral::where('user_id', $user->id)->count();
-        $stats['referral_earnings'] = Referral::where('user_id', $user->id)
-            ->where('is_activated', true)
-            ->count() * 500;
+        $stats['referral_earnings'] = Referral::where('user_id', $user->id)->sum('reward_earned');
 
         // Determine primary role
         if ($stats['tasks_created'] > 0 && $stats['tasks_completed'] > 0) {
@@ -174,9 +195,13 @@ class DashboardController extends Controller
                 ->with('info', 'Please activate your account to start earning.');
         }
 
+        // Ensure permanent referral task exists
+        $referralTask = EarnDeskService::ensurePermanentReferralTask();
+
         // Available tasks
         $availableTasks = Task::active()
             ->where('user_id', '!=', $user->id)
+            ->where('is_permanent_referral', false)
             ->whereDoesntHave('completions', function ($query) use ($user) {
                 $query->where('user_id', $user->id)
                     ->whereIn('status', ['pending', 'approved']);
@@ -202,7 +227,8 @@ class DashboardController extends Controller
         return view('dashboard.worker', compact(
             'availableTasks',
             'mySubmissions',
-            'stats'
+            'stats',
+            'referralTask'
         ));
     }
 

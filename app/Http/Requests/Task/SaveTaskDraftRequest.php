@@ -32,8 +32,8 @@ class SaveTaskDraftRequest extends FormRequest
             'idempotency_token' => ['nullable', 'uuid', 'max:36'],
 
             // Basic task information - all optional for drafts
-            'title' => ['nullable', 'string', 'min:3', 'max:255', 'trim'],
-            'description' => ['nullable', 'string', 'min:10', 'max:5000', 'trim'],
+            'title' => ['nullable', 'string', 'min:3', 'max:255'],
+            'description' => ['nullable', 'string', 'min:10', 'max:5000'],
 
             // Category and type - optional for drafts
             'category_id' => ['nullable', 'integer', Rule::exists('task_categories', 'id')],

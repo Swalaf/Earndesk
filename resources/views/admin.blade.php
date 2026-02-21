@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Admin Dashboard - EarnDesk')
 
@@ -92,6 +92,18 @@
                 </div>
             </a>
 
+            <a href="{{ route('admin.professional-services') }}" class="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-5 text-white hover:shadow-xl hover:shadow-teal-500/30 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <i class="fas fa-briefcase text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="font-bold">Services</h3>
+                        <p class="text-teal-100 text-sm">Professional services</p>
+                    </div>
+                </div>
+            </a>
+
             <a href="{{ route('admin.withdrawals') }}" class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-5 text-white hover:shadow-xl hover:shadow-green-500/30 transition-all transform hover:-translate-y-1">
                 <div class="flex items-center">
                     <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
@@ -100,6 +112,33 @@
                     <div class="ml-4">
                         <h3 class="font-bold">Withdrawals</h3>
                         <p class="text-green-100 text-sm">{{ $pendingWithdrawals }} pending</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Second Row Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <a href="{{ route('admin.completions') }}" class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-5 text-white hover:shadow-xl hover:shadow-orange-500/30 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <i class="fas fa-check-circle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="font-bold">Completions</h3>
+                        <p class="text-orange-100 text-sm">{{ $pendingCompletions }} pending</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.referrals') }}" class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl p-5 text-white hover:shadow-xl hover:shadow-pink-500/30 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <i class="fas fa-user-plus text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="font-bold">Referrals</h3>
+                        <p class="text-pink-100 text-sm">Manage referrals</p>
                     </div>
                 </div>
             </a>
@@ -112,6 +151,18 @@
                     <div class="ml-4">
                         <h3 class="font-bold">Analytics</h3>
                         <p class="text-indigo-100 text-sm">View reports</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.settings') }}" class="bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl p-5 text-white hover:shadow-xl hover:shadow-gray-500/30 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <i class="fas fa-cog text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="font-bold">Settings</h3>
+                        <p class="text-gray-100 text-sm">Platform config</p>
                     </div>
                 </div>
             </a>

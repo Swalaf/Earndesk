@@ -140,7 +140,7 @@ class RevenueAnalyticsService
             'referral' => $activations->referral()->count(),
             'revenue' => $activations->sum('platform_revenue'),
             'referral_bonus' => $activations->sum('referral_bonus'),
-            'net_profit' => $activations->sum('platform_revenue') - $activations->sum('referral_bonus'),
+            'net_profit' => $activations->sum('platform_revenue'),
         ];
     }
 
@@ -321,7 +321,7 @@ class RevenueAnalyticsService
             'referrer_id' => $referrerId,
             'activation_fee' => $activationFee,
             'referral_bonus' => $referralBonus,
-            'platform_revenue' => $activationFee - $referralBonus,
+            'platform_revenue' => max(0, $activationFee - $referralBonus),
             'payment_method' => $metadata['payment_method'] ?? null,
             'payment_gateway' => $metadata['payment_gateway'] ?? null,
             'reference' => $metadata['reference'] ?? null,

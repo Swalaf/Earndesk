@@ -32,7 +32,7 @@
                         <i class="fas fa-info-circle mt-1 mr-3 flex-shrink-0"></i>
                         <div>
                             <p class="font-semibold">Task Creation on Hold</p>
-                            <p class="text-sm mt-1">You need to deposit at least <strong>{{ session('insufficient_balance_required') }}</strong> to create your task. After depositing, your task will be created automatically!</p>
+                            <p class="text-sm mt-1">You need to deposit at least <strong>₦{{ number_format(session('insufficient_balance_required'), 0) }}</strong> to create your task. After depositing, your task will be created automatically!</p>
                         </div>
                     </div>
                 </div>
@@ -65,11 +65,7 @@
                             <input type="number" name="amount" id="amount" min="100" step="1"
                                 class="block w-full pl-8 pr-12 py-4 text-lg bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                 placeholder="Enter amount" 
-                                @if(session('insufficient_balance_required'))
-                                    value="{{ intval(preg_replace('/[^0-9.]/', '', session('insufficient_balance_required'))) }}"
-                                @else
-                                    value="{{ old('amount', 0) }}"
-                                @endif
+                                value="{{ session('insufficient_balance_required') ? session('insufficient_balance_required') : old('amount', 0) }}"
                                 required>
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                                 <span class="text-gray-500 dark:text-gray-400 sm:text-sm">NGN</span>

@@ -77,6 +77,39 @@
                         </a>
                     </div>
 
+                    <!-- Permanent Referral Bonus Task -->
+                    @if($referralTask)
+                    <div class="px-6 py-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-200">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-users text-green-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-bold text-green-900">{{ $referralTask->title }}</h3>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-star mr-1"></i>Permanent
+                                    </span>
+                                </div>
+                                <p class="mt-1 text-sm text-green-700">{{ $referralTask->description }}</p>
+                                <div class="mt-3 flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span class="text-2xl font-bold text-green-600">₦{{ number_format($referralTask->worker_reward_per_task) }}</span>
+                                        <span class="ml-1 text-sm text-green-600">per referral</span>
+                                    </div>
+                                    @auth
+                                    <a href="{{ route('register', ['ref' => Auth::id()]) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-link mr-2"></i>Your Referral Link
+                                    </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @if($availableTasks->count() > 0)
                         <div class="divide-y divide-gray-200">
                             @foreach($availableTasks as $task)

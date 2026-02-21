@@ -65,6 +65,7 @@
                             <label for="smtp_driver" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Mail Driver</label>
                             <select name="smtp_driver" id="smtp_driver" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" {{ auth()->user()->hasPermission('\App\\Models\\AdminRole::PERMISSION_SETTINGS_EDIT') ? '' : 'disabled' }}>
                                 <option value="smtp" {{ ($settingsByKey['smtp_driver'] ?? 'smtp') === 'smtp' ? 'selected' : '' }}>SMTP</option>
+                                <option value="turbosmtp" {{ ($settingsByKey['smtp_driver'] ?? '') === 'turbosmtp' ? 'selected' : '' }}>TurboSMTP</option>
                                 <option value="mailgun" {{ ($settingsByKey['smtp_driver'] ?? '') === 'mailgun' ? 'selected' : '' }}>Mailgun</option>
                                 <option value="sendmail" {{ ($settingsByKey['smtp_driver'] ?? '') === 'sendmail' ? 'selected' : '' }}>Sendmail</option>
                                 <option value="log" {{ ($settingsByKey['smtp_driver'] ?? '') === 'log' ? 'selected' : '' }}>Log (Debug)</option>

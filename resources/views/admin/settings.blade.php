@@ -1,4 +1,4 @@
-an@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Admin Settings')
 
@@ -14,7 +14,7 @@ an@extends('layouts.admin')
         <!-- Settings Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- General -->
-            <div class="group relative bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 p-6 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300">
+            <a href="{{ route('admin.settings.general') }}" class="group relative bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 p-6 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 block">
                 <div class="absolute top-3 right-3">
                     <div class="relative">
                         <button type="button" class="w-6 h-6 rounded-full bg-gray-100 dark:bg-dark-700 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" data-tooltip-target="tooltip-general">

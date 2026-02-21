@@ -20,6 +20,11 @@ class Wallet extends Model
         'is_activated',
         'activated_at',
         'currency',
+        // Earning categories
+        'total_task_earnings',
+        'total_referral_bonuses',
+        'total_deposits',
+        'total_fees',
     ];
 
     protected $casts = [
@@ -31,6 +36,11 @@ class Wallet extends Model
         'escrow_balance' => 'decimal:2',
         'is_activated' => 'boolean',
         'activated_at' => 'datetime',
+        // Earning categories
+        'total_task_earnings' => 'decimal:2',
+        'total_referral_bonuses' => 'decimal:2',
+        'total_deposits' => 'decimal:2',
+        'total_fees' => 'decimal:2',
     ];
 
     /**
@@ -158,6 +168,16 @@ class Wallet extends Model
         $before = $this->withdrawable_balance;
         $this->withdrawable_balance += $amount;
         $this->total_earned += $amount;
+        
+        // Track earnings by category
+        if ($type === 'task_earning' || $type === 'task_reward') {
+            $this->total_task_earnings = ($this->total_task_earnings ?? 0) + $amount;
+        } elseif ($type === 'referral_bonus') {
+            $this->total_referral_bonuses = ($this->total_referral_bonuses ?? 0) + $amount;
+        } elseif ($type === 'deposit') {
+            $this->total_deposits = ($this->total_deposits ?? 0) + $amount;
+        }
+        
         $this->save();
         
         // Record ledger entry using the static method for consistency

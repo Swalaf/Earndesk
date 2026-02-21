@@ -142,12 +142,12 @@ class TaskCreationLog extends Model
     }
 
     /**
-     * Check if a token already exists.
+     * Check if a token already exists (for any non-terminal status).
      */
     public static function tokenExists(string $token): bool
     {
         return self::where('token', $token)
-            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_PROCESSING])
+            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_PROCESSING, self::STATUS_FAILED])
             ->exists();
     }
 

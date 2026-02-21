@@ -9,6 +9,7 @@ use App\Models\SystemSetting;
 use App\Models\AdminRole;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Models\MarketplaceCategory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -46,6 +47,16 @@ class DatabaseSeeder extends Seeder
         
         // Seed task categories
         $this->seedTaskCategories();
+        
+        // Seed marketplace categories
+        $this->call([
+            MarketplaceCategorySeeder::class,
+        ]);
+        
+        // Seed professional service categories
+        $this->call([
+            ProfessionalServiceCategorySeeder::class,
+        ]);
         
         // Seed badges
         $this->seedBadges();

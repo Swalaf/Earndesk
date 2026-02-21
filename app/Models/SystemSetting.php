@@ -35,6 +35,12 @@ class SystemSetting extends Model
     const GROUP_REGISTRATION = 'registration';
     const GROUP_COMMISSION = 'commission';
     const GROUP_EMAIL_TEMPLATES = 'email_templates';
+    const GROUP_REFERRAL = 'referral';
+    const GROUP_OAUTH = 'oauth';
+    const GROUP_MODULES = 'modules';
+    const GROUP_ESCROW = 'escrow';
+    const GROUP_VERIFICATION = 'verification';
+    const GROUP_BOOST = 'boost';
 
     const GROUPS = [
         self::GROUP_GENERAL => 'General',
@@ -49,6 +55,12 @@ class SystemSetting extends Model
         self::GROUP_REGISTRATION => 'Registration',
         self::GROUP_COMMISSION => 'Commission & Earnings',
         'task-gate' => 'Task Creation Gate',
+        'referral' => 'Referral Bonus',
+        self::GROUP_OAUTH => 'OAuth / Social Login',
+        self::GROUP_MODULES => 'Module Control',
+        self::GROUP_ESCROW => 'Escrow Settings',
+        self::GROUP_VERIFICATION => 'Verification & Trust',
+        self::GROUP_BOOST => 'Boost & Monetization',
     ];
 
     // Encryption for sensitive values
@@ -364,6 +376,253 @@ class SystemSetting extends Model
     }
 
     /**
+     * Check if task approval expiry is enabled
+     */
+    public static function isTaskApprovalExpiryEnabled(): bool
+    {
+        return self::getBool('task_approval_expiry_enabled', false);
+    }
+
+    /**
+     * Get task approval expiry value (number)
+     */
+    public static function getTaskApprovalExpiryValue(): int
+    {
+        return (int) self::getNumber('task_approval_expiry_value', 24);
+    }
+
+    /**
+     * Get task approval expiry unit (hours or days)
+     */
+    public static function getTaskApprovalExpiryUnit(): string
+    {
+        return self::get('task_approval_expiry_unit', 'hours');
+    }
+
+    /**
+     * Get task approval expiry action (auto_approve or expire)
+     */
+    public static function getTaskApprovalExpiryAction(): string
+    {
+        return self::get('task_approval_expiry_action', 'auto_approve');
+    }
+
+    /**
+     * Get task approval expiry in hours (converts days to hours if needed)
+     */
+    public static function getTaskApprovalExpiryInHours(): int
+    {
+        $value = self::getTaskApprovalExpiryValue();
+        $unit = self::getTaskApprovalExpiryUnit();
+        
+        if ($unit === 'days') {
+            return $value * 24;
+        }
+        
+        return $value;
+    }
+
+    /**
+     * Check if compulsory task creation before earning is enabled
+     */
+    public static function isCompulsoryTaskCreationEnabled(): bool
+    {
+        return self::getBool('compulsory_task_creation_before_earning', false);
+    }
+
+    /**
+     * Check if permanent referral bonus task is enabled
+     */
+    public static function isReferralBonusTaskEnabled(): bool
+    {
+        return self::getBool('referral_bonus_task_enabled', true);
+    }
+
+    /**
+     * Get referral bonus amount per activated referral
+     */
+    public static function getReferralBonusAmount(): float
+    {
+        return (float) self::getNumber('referral_bonus_amount', 500);
+    }
+
+    // ==========================================
+    // Module Control Methods
+    // ==========================================
+
+    /**
+     * Check if a specific module is enabled
+     */
+    public static function isModuleEnabled(string $module): bool
+    {
+        return self::getBool("module_{$module}_enabled", true);
+    }
+
+    /**
+     * Get module commission rate
+     */
+    public static function getModuleCommission(string $module): float
+    {
+        return self::getNumber("module_{$module}_commission", 
+            self::getPlatformCommission()
+        );
+    }
+
+    /**
+     * Get all module statuses
+     */
+    public static function getModuleStatuses(): array
+    {
+        $modules = ['tasks', 'services', 'growth', 'digital', 'jobs', 'escrow', 'boost', 'referral'];
+        $statuses = [];
+        
+        foreach ($modules as $module) {
+            $statuses[$module] = [
+                'enabled' => self::isModuleEnabled($module),
+                'commission' => self::getModuleCommission($module),
+            ];
+        }
+        
+        return $statuses;
+    }
+
+    // ==========================================
+    // Escrow Settings Methods
+    // ==========================================
+
+    /**
+     * Get escrow auto-release days
+     */
+    public static function getEscrowAutoReleaseDays(): int
+    {
+        return (int) self::getNumber('escrow_auto_release_days', 7);
+    }
+
+    /**
+     * Get escrow max revision cycles
+     */
+    public static function getEscrowMaxRevisionCycles(): int
+    {
+        return (int) self::getNumber('escrow_max_revision_cycles', 3);
+    }
+
+    /**
+     * Get escrow dispute window days
+     */
+    public static function getEscrowDisputeWindowDays(): int
+    {
+        return (int) self::getNumber('escrow_dispute_window_days', 14);
+    }
+
+    /**
+     * Check if partial refund is allowed
+     */
+    public static function isEscrowPartialRefundAllowed(): bool
+    {
+        return self::getBool('escrow_partial_refund_allowed', true);
+    }
+
+    /**
+     * Get escrow auto-accept days
+     */
+    public static function getEscrowAutoAcceptDays(): int
+    {
+        return (int) self::getNumber('escrow_auto_accept_days', 3);
+    }
+
+    // ==========================================
+    // Verification Settings Methods
+    // ==========================================
+
+    /**
+     * Check if verification is enabled
+     */
+    public static function isVerificationEnabled(): bool
+    {
+        return self::getBool('verification_enabled', true);
+    }
+
+    /**
+     * Get verification fee
+     */
+    public static function getVerificationFee(): float
+    {
+        return self::getNumber('verification_fee', 500);
+    }
+
+    /**
+     * Get required verification documents
+     */
+    public static function getRequiredVerificationDocuments(): array
+    {
+        return self::getArray('verification_required_documents', ['id_card', 'proof_of_address', 'selfie']);
+    }
+
+    /**
+     * Get verification tier threshold
+     */
+    public static function getVerificationTierThreshold(int $tier): float
+    {
+        return self::getNumber("verification_tier{$tier}_threshold", 50000 * $tier);
+    }
+
+    /**
+     * Get verification expiry days
+     */
+    public static function getVerificationExpiryDays(): int
+    {
+        return (int) self::getNumber('verification_expiry_days', 365);
+    }
+
+    // ==========================================
+    // Boost Settings Methods
+    // ==========================================
+
+    /**
+     * Check if boost is enabled for a module
+     */
+    public static function isBoostEnabledFor(string $module): bool
+    {
+        return self::getBool("boost_enabled_{$module}", true);
+    }
+
+    /**
+     * Get max active boosts per user
+     */
+    public static function getMaxActiveBoostsPerUser(): int
+    {
+        return (int) self::getNumber('boost_max_active_per_user', 5);
+    }
+
+    /**
+     * Get default boost multiplier
+     */
+    public static function getDefaultBoostMultiplier(): float
+    {
+        return self::getNumber('boost_default_multiplier', 2);
+    }
+
+    // ==========================================
+    // Extended Commission Methods
+    // ==========================================
+
+    /**
+     * Get dispute penalty fee percentage
+     */
+    public static function getDisputePenaltyFee(): float
+    {
+        return self::getNumber('dispute_penalty_fee', 5);
+    }
+
+    /**
+     * Get max dispute penalty amount
+     */
+    public static function getDisputePenaltyMax(): float
+    {
+        return self::getNumber('dispute_penalty_max', 5000);
+    }
+
+    /**
      * Check if maintenance mode is enabled
      */
     public static function isMaintenanceModeEnabled(): bool
@@ -428,6 +687,20 @@ class SystemSetting extends Model
             'site_name' => ['value' => 'EarnDesk', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
             'site_url' => ['value' => url('/'), 'group' => self::GROUP_GENERAL, 'type' => 'text'],
             'site_logo' => ['value' => '', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
+            
+            // Task Approval Expiry
+            'task_approval_expiry_enabled' => ['value' => false, 'group' => self::GROUP_GENERAL, 'type' => 'boolean'],
+            'task_approval_expiry_value' => ['value' => 24, 'group' => self::GROUP_GENERAL, 'type' => 'number'],
+            'task_approval_expiry_unit' => ['value' => 'hours', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
+            'task_approval_expiry_action' => ['value' => 'auto_approve', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
+
+            // Compulsory Task Creation
+            'compulsory_task_creation_before_earning' => ['value' => false, 'group' => self::GROUP_GENERAL, 'type' => 'boolean'],
+
+            // Referral Bonus Task
+            'referral_bonus_task_enabled' => ['value' => true, 'group' => self::GROUP_REFERRAL, 'type' => 'boolean'],
+            'referral_bonus_amount' => ['value' => 500, 'group' => self::GROUP_REFERRAL, 'type' => 'number'],
+            'referral_bonus_target' => ['value' => 20, 'group' => self::GROUP_REFERRAL, 'type' => 'number'],
 
             // Registration
             'registration_enabled' => ['value' => true, 'group' => self::GROUP_REGISTRATION, 'type' => 'boolean'],
@@ -526,6 +799,55 @@ class SystemSetting extends Model
             'email_referral_bonus_subject' => ['value' => 'You Earned a Referral Bonus!', 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'text'],
             'email_deposit_enabled' => ['value' => true, 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'boolean'],
             'email_deposit_subject' => ['value' => 'Deposit Confirmed', 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'text'],
+
+            // Module Control
+            'module_tasks_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_tasks_commission' => ['value' => 25, 'group' => self::GROUP_MODULES, 'type' => 'number'],
+            'module_services_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_services_commission' => ['value' => 15, 'group' => self::GROUP_MODULES, 'type' => 'number'],
+            'module_services_approval_required' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_growth_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_growth_commission' => ['value' => 10, 'group' => self::GROUP_MODULES, 'type' => 'number'],
+            'module_digital_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_digital_commission' => ['value' => 20, 'group' => self::GROUP_MODULES, 'type' => 'number'],
+            'module_jobs_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_jobs_listing_fee' => ['value' => 0, 'group' => self::GROUP_MODULES, 'type' => 'number'],
+            'module_jobs_featured_fee' => ['value' => 500, 'group' => self::GROUP_MODULES, 'type' => 'number'],
+            'module_escrow_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_boost_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+            'module_referral_enabled' => ['value' => true, 'group' => self::GROUP_MODULES, 'type' => 'boolean'],
+
+            // Escrow Settings
+            'escrow_auto_release_days' => ['value' => 7, 'group' => self::GROUP_ESCROW, 'type' => 'number'],
+            'escrow_max_revision_cycles' => ['value' => 3, 'group' => self::GROUP_ESCROW, 'type' => 'number'],
+            'escrow_dispute_window_days' => ['value' => 14, 'group' => self::GROUP_ESCROW, 'type' => 'number'],
+            'escrow_partial_refund_allowed' => ['value' => true, 'group' => self::GROUP_ESCROW, 'type' => 'boolean'],
+            'escrow_auto_accept_days' => ['value' => 3, 'group' => self::GROUP_ESCROW, 'type' => 'number'],
+
+            // Verification Settings
+            'verification_enabled' => ['value' => true, 'group' => self::GROUP_VERIFICATION, 'type' => 'boolean'],
+            'verification_fee' => ['value' => 500, 'group' => self::GROUP_VERIFICATION, 'type' => 'number'],
+            'verification_required_documents' => ['value' => '["id_card","proof_of_address","selfie"]', 'group' => self::GROUP_VERIFICATION, 'type' => 'json'],
+            'verification_tier1_threshold' => ['value' => 50000, 'group' => self::GROUP_VERIFICATION, 'type' => 'number'],
+            'verification_tier2_threshold' => ['value' => 200000, 'group' => self::GROUP_VERIFICATION, 'type' => 'number'],
+            'verification_tier3_threshold' => ['value' => 1000000, 'group' => self::GROUP_VERIFICATION, 'type' => 'number'],
+            'verification_expiry_days' => ['value' => 365, 'group' => self::GROUP_VERIFICATION, 'type' => 'number'],
+
+            // Boost Settings
+            'boost_enabled_tasks' => ['value' => true, 'group' => self::GROUP_BOOST, 'type' => 'boolean'],
+            'boost_enabled_services' => ['value' => true, 'group' => self::GROUP_BOOST, 'type' => 'boolean'],
+            'boost_enabled_growth' => ['value' => true, 'group' => self::GROUP_BOOST, 'type' => 'boolean'],
+            'boost_enabled_digital' => ['value' => true, 'group' => self::GROUP_BOOST, 'type' => 'boolean'],
+            'boost_max_active_per_user' => ['value' => 5, 'group' => self::GROUP_BOOST, 'type' => 'number'],
+            'boost_default_multiplier' => ['value' => 2, 'group' => self::GROUP_BOOST, 'type' => 'number'],
+
+            // Extended Commission Settings
+            'commission_services_enabled' => ['value' => true, 'group' => self::GROUP_COMMISSION, 'type' => 'boolean'],
+            'commission_growth_enabled' => ['value' => true, 'group' => self::GROUP_COMMISSION, 'type' => 'boolean'],
+            'commission_digital_enabled' => ['value' => true, 'group' => self::GROUP_COMMISSION, 'type' => 'boolean'],
+            'commission_jobs_enabled' => ['value' => false, 'group' => self::GROUP_COMMISSION, 'type' => 'boolean'],
+            'dispute_penalty_fee' => ['value' => 5, 'group' => self::GROUP_COMMISSION, 'type' => 'number'],
+            'dispute_penalty_max' => ['value' => 5000, 'group' => self::GROUP_COMMISSION, 'type' => 'number'],
         ];
 
         foreach ($defaults as $key => $config) {

@@ -154,6 +154,45 @@
                     </div>
                 </div>
             </a>
+
+            <!-- Hire (Professional Services) -->
+            <a href="{{ route('professional-services.index') }}" class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 p-6 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-500 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
+                        <i class="fas fa-briefcase text-purple-600 dark:text-purple-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100">Hire</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Find professionals</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Growth Marketplace -->
+            <a href="{{ route('growth.index') }}" class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 p-6 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-500 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-green-600 dark:text-green-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100">Growth</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Backlinks & Leads</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Digital Products -->
+            <a href="{{ route('digital-products.index') }}" class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 p-6 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-500 transition-all transform hover:-translate-y-1">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center">
+                        <i class="fas fa-download text-orange-600 dark:text-orange-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100">Products</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Templates & Plugins</p>
+                    </div>
+                </div>
+            </a>
         </div>
 
         <!-- Recent Activity & Referrals -->

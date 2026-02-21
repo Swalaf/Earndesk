@@ -127,6 +127,50 @@ class AdminController extends Controller
     }
 
     /**
+     * Promote user to admin
+     */
+    public function promoteToAdmin(Request $request, User $user)
+    {
+        // Prevent self-demotion
+        if ($user->id === Auth::id()) {
+            return redirect()->back()
+                ->with('error', 'You cannot modify your own admin status.');
+        }
+
+        $user->is_admin = true;
+        
+        // Assign super_admin role by default
+        $superRole = \App\Models\AdminRole::where('name', \App\Models\AdminRole::ROLE_SUPER_ADMIN)->first();
+        if ($superRole) {
+            $user->admin_role_id = $superRole->id;
+        }
+        
+        $user->save();
+
+        return redirect()->back()
+            ->with('success', "{$user->name} has been promoted to admin.");
+    }
+
+    /**
+     * Demote user from admin
+     */
+    public function demoteFromAdmin(Request $request, User $user)
+    {
+        // Prevent self-demotion
+        if ($user->id === Auth::id()) {
+            return redirect()->back()
+                ->with('error', 'You cannot modify your own admin status.');
+        }
+
+        $user->is_admin = false;
+        $user->admin_role_id = null;
+        $user->save();
+
+        return redirect()->back()
+            ->with('success', "{$user->name} has been demoted from admin.");
+    }
+
+    /**
      * Tasks management
      */
     public function tasks(Request $request)
@@ -262,8 +306,13 @@ class AdminController extends Controller
     {
         $result = $this->earnDeskService->awardTaskEarnings($completion);
 
+        if (!$result['success']) {
+            return redirect()->back()
+                ->with('error', $result['message'] ?? 'Failed to approve completion.');
+        }
+
         return redirect()->back()
-            ->with('success', 'Completion approved.');
+            ->with('success', 'Completion approved. ' . ($result['message'] ?? ''));
     }
 
     /**
@@ -382,7 +431,7 @@ class AdminController extends Controller
         $referrer = $referral->user;
         $referredName = $referral->referredUser ? $referral->referredUser->name : $referral->referred_email;
         if ($referrer && $referrer->wallet) {
-            $referrer->wallet->deposit($bonusAmount, 'referral_bonus', 'Referral bonus for referring ' . $referredName);
+            $referrer->wallet->addWithdrawable($bonusAmount, 'referral_bonus', 'Referral bonus for referring ' . $referredName);
         }
 
         $referral->update(['reward_earned' => $bonusAmount]);
@@ -550,5 +599,374 @@ class AdminController extends Controller
 
         return redirect()->back()
             ->with('success', "Processed {$expiredTasks} expired tasks.");
+    }
+
+    /**
+     * Send push notification to users
+     */
+    public function sendNotification(Request $request)
+    {
+        $request->validate([
+            'recipient_type' => 'required|in:all,active,inactive,new,single',
+            'user_email' => 'required_if:recipient_type,single|email',
+            'notif_title' => 'required|string|max:255',
+            'notif_message' => 'required|string',
+            'send_via' => 'required|array|min:1',
+            'send_via.*' => 'in:email,database',
+        ]);
+
+        $title = $request->notif_title;
+        $message = $request->notif_message;
+        $sendVia = $request->send_via;
+        $recipientType = $request->recipient_type;
+
+        // Get users based on recipient type
+        $users = collect();
+
+        switch ($recipientType) {
+            case 'all':
+                $users = User::where('email', '!=', null)->get();
+                break;
+            case 'active':
+                $users = User::where('last_activity_at', '>=', now()->subDays(30))->get();
+                break;
+            case 'inactive':
+                $users = User::where('last_activity_at', '<', now()->subDays(30))
+                    ->orWhereNull('last_activity_at')
+                    ->get();
+                break;
+            case 'new':
+                $users = User::where('created_at', '>=', now()->subDays(7))->get();
+                break;
+            case 'single':
+                $user = User::where('email', $request->user_email)->first();
+                if ($user) {
+                    $users = collect([$user]);
+                }
+                break;
+        }
+
+        if ($users->isEmpty()) {
+            return redirect()->back()->with('error', 'No users found matching the criteria.');
+        }
+
+        $sent = 0;
+        $failed = 0;
+
+        foreach ($users as $user) {
+            try {
+                // Send via selected channels
+                if (in_array('email', $sendVia) && $user->email) {
+                    $user->notify(new \App\Notifications\CustomNotification($title, $message, 'push'));
+                } elseif (in_array('database', $sendVia)) {
+                    \App\Models\Notification::create([
+                        'user_id' => $user->id,
+                        'type' => 'admin_push',
+                        'title' => $title,
+                        'message' => $message,
+                        'data' => json_encode(['source' => 'admin_push']),
+                        'is_read' => false,
+                    ]);
+                }
+                $sent++;
+            } catch (\Exception $e) {
+                \Log::error('Failed to send notification to user ' . $user->id, ['error' => $e->getMessage()]);
+                $failed++;
+            }
+        }
+
+        $message = "Notifications sent: {$sent} successful";
+        if ($failed > 0) {
+            $message .= ", {$failed} failed";
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
+     * Professional Services management - list pending services
+     */
+    public function professionalServices(Request $request)
+    {
+        $query = \App\Models\ProfessionalService::with(['seller', 'category']);
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // Default to pending
+            $query->where('status', 'pending');
+        }
+
+        $services = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $stats = [
+            'total' => \App\Models\ProfessionalService::count(),
+            'pending' => \App\Models\ProfessionalService::where('status', 'pending')->count(),
+            'active' => \App\Models\ProfessionalService::where('status', 'active')->count(),
+            'rejected' => \App\Models\ProfessionalService::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.professional-services', compact('services', 'stats'));
+    }
+
+    /**
+     * View professional service details
+     */
+    public function professionalServiceDetails(\App\Models\ProfessionalService $service)
+    {
+        $service->load(['seller', 'category', 'addons']);
+
+        return view('admin.professional-service-details', compact('service'));
+    }
+
+    /**
+     * Approve professional service
+     */
+    public function approveProfessionalService(\App\Models\ProfessionalService $service)
+    {
+        if ($service->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Only pending services can be approved.');
+        }
+
+        $service->update([
+            'status' => 'active',
+            'rejection_reason' => null,
+        ]);
+
+        // Notify the seller
+        $service->seller->notify(new \App\Notifications\CustomNotification(
+            'Service Approved',
+            "Your service '{$service->title}' has been approved and is now live!",
+            'service_approval'
+        ));
+
+        return redirect()->back()
+            ->with('success', 'Service approved successfully.');
+    }
+
+    /**
+     * Reject professional service
+     */
+    public function rejectProfessionalService(Request $request, \App\Models\ProfessionalService $service)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        if ($service->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Only pending services can be rejected.');
+        }
+
+        $service->update([
+            'status' => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+
+        // Notify the seller
+        $service->seller->notify(new \App\Notifications\CustomNotification(
+            'Service Rejected',
+            "Your service '{$service->title}' was not approved. Reason: {$request->rejection_reason}",
+            'service_rejection'
+        ));
+
+        return redirect()->back()
+            ->with('success', 'Service rejected.');
+    }
+
+    /**
+     * Growth Listings management - list pending listings
+     */
+    public function growthListings(Request $request)
+    {
+        $query = \App\Models\GrowthListing::with(['seller']);
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // Default to pending
+            $query->where('status', 'pending');
+        }
+
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $listings = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $stats = [
+            'total' => \App\Models\GrowthListing::count(),
+            'pending' => \App\Models\GrowthListing::where('status', 'pending')->count(),
+            'active' => \App\Models\GrowthListing::where('status', 'active')->count(),
+            'rejected' => \App\Models\GrowthListing::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.growth-listings', compact('listings', 'stats'));
+    }
+
+    /**
+     * View growth listing details
+     */
+    public function growthListingDetails(\App\Models\GrowthListing $listing)
+    {
+        $listing->load(['seller', 'orders']);
+
+        return view('admin.growth-listing-details', compact('listing'));
+    }
+
+    /**
+     * Approve growth listing
+     */
+    public function approveGrowthListing(\App\Models\GrowthListing $listing)
+    {
+        if ($listing->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Only pending listings can be approved.');
+        }
+
+        $listing->update([
+            'status' => 'active',
+            'rejection_reason' => null,
+        ]);
+
+        // Notify the seller
+        if ($listing->seller) {
+            $listing->seller->notify(new \App\Notifications\CustomNotification(
+                'Listing Approved',
+                "Your growth listing '{$listing->title}' has been approved and is now live!",
+                'listing_approval'
+            ));
+        }
+
+        return redirect()->back()
+            ->with('success', 'Listing approved successfully.');
+    }
+
+    /**
+     * Reject growth listing
+     */
+    public function rejectGrowthListing(Request $request, \App\Models\GrowthListing $listing)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        if ($listing->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Only pending listings can be rejected.');
+        }
+
+        $listing->update([
+            'status' => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+
+        // Notify the seller
+        if ($listing->seller) {
+            $listing->seller->notify(new \App\Notifications\CustomNotification(
+                'Listing Rejected',
+                "Your growth listing '{$listing->title}' was not approved. Reason: {$request->rejection_reason}",
+                'listing_rejection'
+            ));
+        }
+
+        return redirect()->back()
+            ->with('success', 'Listing rejected.');
+    }
+
+    /**
+     * Digital Products management
+     */
+    public function digitalProducts(Request $request)
+    {
+        $status = $request->get('status', 'pending');
+
+        $query = \App\Models\DigitalProduct::with(['seller', 'category']);
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        $stats = [
+            'total' => \App\Models\DigitalProduct::count(),
+            'pending' => \App\Models\DigitalProduct::where('status', 'pending')->count(),
+            'active' => \App\Models\DigitalProduct::where('status', 'active')->count(),
+            'rejected' => \App\Models\DigitalProduct::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.digital-products', compact('products', 'stats'));
+    }
+
+    /**
+     * View digital product details
+     */
+    public function digitalProductDetails(\App\Models\DigitalProduct $product)
+    {
+        $product->load(['seller', 'category', 'orders']);
+
+        return view('admin.digital-product-details', compact('product'));
+    }
+
+    /**
+     * Approve digital product
+     */
+    public function approveDigitalProduct(\App\Models\DigitalProduct $product)
+    {
+        if ($product->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Only pending products can be approved.');
+        }
+
+        $product->update([
+            'status' => 'active',
+            'rejection_reason' => null,
+        ]);
+
+        // Notify the seller
+        if ($product->seller) {
+            $product->seller->notify(new \App\Notifications\CustomNotification(
+                'Product Approved',
+                "Your digital product '{$product->name}' has been approved and is now live!",
+                'product_approval'
+            ));
+        }
+
+        return redirect()->back()
+            ->with('success', 'Product approved successfully.');
+    }
+
+    /**
+     * Reject digital product
+     */
+    public function rejectDigitalProduct(Request $request, \App\Models\DigitalProduct $product)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        if ($product->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Only pending products can be rejected.');
+        }
+
+        $product->update([
+            'status' => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+
+        // Notify the seller
+        if ($product->seller) {
+            $product->seller->notify(new \App\Notifications\CustomNotification(
+                'Product Rejected',
+                "Your digital product '{$product->name}' was not approved. Reason: {$request->rejection_reason}",
+                'product_rejection'
+            ));
+        }
+
+        return redirect()->back()
+            ->with('success', 'Product rejected.');
     }
 }

@@ -87,12 +87,12 @@ class TaskCreationService
             }
 
             if ($existingLog->status === TaskCreationLog::STATUS_FAILED) {
-                // Allow retry - create new log entry
+                // Allow retry - generate a new token for the new attempt
                 $idempotencyToken = (string) Str::uuid();
             }
         }
 
-        // Create new creation log
+        // Create new creation log with the (possibly new) token
         $creationLog = $this->createCreationLog(
             $user->id,
             $idempotencyToken,
@@ -130,12 +130,22 @@ class TaskCreationService
                 $walletCheck = $this->checkWalletBalance($user, $data['budget']);
                 if (!$walletCheck['sufficient']) {
                     $this->logFailure($creationLog, 'Insufficient wallet balance');
+                    
+                    // Store form data and required amount in session for redirect after deposit
+                    $requiredAmount = $data['budget'] - $walletCheck['balance'];
+                    session([
+                        'insufficient_balance_required' => $data['budget'],
+                        'task_creation_data' => $data,
+                        'deposit_success_redirect' => route('tasks.create.resume'),
+                    ]);
+                    
                     return [
                         'task' => null,
                         'success' => false,
                         'message' => $walletCheck['message'],
                         'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
                         'redirect' => route('wallet.deposit'),
+                        'required_amount' => $requiredAmount,
                     ];
                 }
             }
@@ -339,6 +349,7 @@ class TaskCreationService
                 TaskCreationLog::STATUS_PENDING,
                 TaskCreationLog::STATUS_PROCESSING,
                 TaskCreationLog::STATUS_COMPLETED,
+                TaskCreationLog::STATUS_FAILED, // Include FAILED to allow retries after failures
             ])
             ->first();
     }

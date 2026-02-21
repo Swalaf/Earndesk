@@ -11,12 +11,41 @@ module.exports = {
         './resources/js/**/*.js',
     ],
 
+    // Safelist dynamic classes used in Blade templates
+    safelist: [
+        // Dynamic background colors
+        { pattern: /^bg-(indigo|purple|pink|green|emerald|blue|cyan|orange|amber|yellow|red|rose|violet|teal)-\d+00?$/ },
+        { pattern: /^bg-gradient-to-(r|l|t|b|tr|tl|br|bl)$/ },
+        // Dynamic text colors
+        { pattern: /^text-(indigo|purple|pink|green|emerald|blue|cyan|orange|amber|yellow|red|rose|violet|teal|gray|white)-\d+00?$/ },
+        // Dynamic border colors
+        { pattern: /^border-(indigo|purple|pink|green|emerald|blue|cyan|orange|amber|yellow|red|rose|violet|teal|gray)-\d+00?$/ },
+        // Dark mode variants
+        'dark:bg-dark-800',
+        'dark:bg-dark-900',
+        'dark:bg-dark-950',
+        'dark:bg-dark-700',
+        'dark:text-gray-100',
+        'dark:text-gray-300',
+        'dark:text-gray-400',
+        'dark:border-dark-600',
+        'dark:border-dark-700',
+        // Animation classes
+        'animate-float',
+        'animate-float-delayed',
+        'animate-pulse-glow',
+        // Custom classes
+        'glass-card',
+        'gradient-text',
+        'gradient-text-alt',
+    ],
+
     theme: {
         extend: {
             fontFamily: {
-                heading: ['var(--font-heading-name)', 'sans-serif'],
-                body: ['var(--font-body-name)', 'sans-serif'],
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                heading: ['var(--font-heading-name)', 'Plus Jakarta Sans', 'sans-serif'],
+                body: ['var(--font-body-name)', 'Inter', 'sans-serif'],
+                sans: ['Inter', 'Nunito', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: {
@@ -44,7 +73,22 @@ module.exports = {
                     900: '#0f172a',
                     950: '#020617',
                 }
-            }
+            },
+            animation: {
+                'float': 'float 6s ease-in-out infinite',
+                'float-delayed': 'float 6s ease-in-out infinite 2s',
+                'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+            },
+            keyframes: {
+                float: {
+                    '0%, 100%': { transform: 'translateY(0px)' },
+                    '50%': { transform: 'translateY(-20px)' },
+                },
+                'pulse-glow': {
+                    '0%, 100%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' },
+                    '50%': { boxShadow: '0 0 40px rgba(99, 102, 241, 0.6)' },
+                },
+            },
         },
     },
 

@@ -36,6 +36,7 @@ class Transaction extends Model
     public const TYPE_WITHDRAWAL = 'withdrawal';
     public const TYPE_TASK_REWARD = 'task_reward';
     public const TYPE_TASK_PAYMENT = 'task_payment';
+    public const TYPE_TASK_EARNING = 'task_earning';
     public const TYPE_REFERRAL_BONUS = 'referral_bonus';
     public const TYPE_ACTIVATION = 'activation';
     public const TYPE_FEE = 'fee';

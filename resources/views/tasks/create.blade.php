@@ -16,8 +16,15 @@
 
     <!-- Form Container -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <form action="{{ route('tasks.store') }}" method="POST" class="bg-white dark:bg-dark-900 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 overflow-hidden">
+        <form action="{{ route('tasks.create.store') }}" method="POST" class="bg-white dark:bg-dark-900 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-dark-950/50 border border-gray-100 dark:border-dark-700 overflow-hidden">
             @csrf
+            
+            <!-- Idempotency Token -->
+            <input type="hidden" name="idempotency_token" value="{{ $idempotencyToken ?? '' }}">
+            <!-- Hidden task_type field (set by JavaScript based on task_group) -->
+            <input type="hidden" name="task_type" id="hidden_task_type" value="">
+            <!-- Hidden proof_instructions field (set by JavaScript based on instructions) -->
+            <input type="hidden" name="proof_instructions" id="hidden_proof_instructions" value="">
 
             <!-- Flash messages -->
             @if(session('success'))
@@ -323,6 +330,71 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle form submission via AJAX to support redirect responses
+    const form = document.querySelector('form[action="{{ route('tasks.create.store') }}"]');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.textContent : 'Submitting...';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+            }
+            
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Success - redirect to my-tasks or show success
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else if (data.task_id) {
+                        window.location.href = '{{ route('tasks.my-tasks') }}';
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    // Error - check if redirect is needed (e.g., insufficient balance)
+                    if (data.redirect && data.required_amount) {
+                        // Redirect with required amount as query parameter
+                        const redirectUrl = data.redirect + '?required=' + data.required_amount;
+                        
+                        // Show message and redirect
+                        alert(data.message + '\n\nYou will be redirected to deposit funds.');
+                        window.location.href = redirectUrl;
+                        return;
+                    }
+                    
+                    // Show error message
+                    alert(data.message || 'An error occurred');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                alert('An error occurred. Please try again.');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            }
+        });
+    }
+    
     const categoryConfig = @json($categoryConfig);
     const rawCategories = @json($categories->toArray());
     const platformNames = @json(\App\Models\Task::PLATFORMS);
@@ -583,7 +655,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.textContent = 'Saving...';
 
             // Collect form values similar to server saveDraft fields
-            const formEl = document.querySelector('form[action="{{ route('tasks.store') }}"]');
+            const formEl = document.querySelector('form[action="{{ route('tasks.create.store') }}"]');
             const data = {};
             if (!formEl) return window.location = '{{ route('wallet.deposit') }}';
             ['title','description','platform','task_type','category_id','target_url','target_account','hashtag','instructions','proof_type','budget','quantity','min_followers','expires_at'].forEach(name => {
@@ -690,7 +762,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const KEEP_ALIVE_MS = 3 * 60 * 1000; // 3m
     const warnBeforeMs = 2 * 60 * 1000; // warn 2m before expiry
 
-    const form = document.querySelector('form[action="{{ route('tasks.store') }}"]');
+    const form = document.querySelector('form[action="{{ route('tasks.create.store') }}"]');
     if (!form) return;
 
     // Restore draft
@@ -724,6 +796,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Clear draft on successful submit
     form.addEventListener('submit', function(){
+        // Populate hidden fields before submit
+        const taskGroupEl = form.querySelector('input[name="task_group"]:checked');
+        const taskTypeHidden = document.getElementById('hidden_task_type');
+        if (taskGroupEl && taskTypeHidden) {
+            // Convert task_group to task_type (e.g., 'referral' -> 'growth')
+            const taskGroup = taskGroupEl.value;
+            const taskTypeMap = {
+                'micro': 'micro',
+                'ugc': 'ugc',
+                'referral': 'growth',
+                'premium': 'premium'
+            };
+            taskTypeHidden.value = taskTypeMap[taskGroup] || taskGroup;
+        }
+        
+        // Copy instructions to proof_instructions
+        const instructionsEl = form.querySelector('[name="instructions"]');
+        const proofInstructionsHidden = document.getElementById('hidden_proof_instructions');
+        if (instructionsEl && proofInstructionsHidden) {
+            proofInstructionsHidden.value = instructionsEl.value;
+        }
+        
         try { localStorage.removeItem(FORM_KEY); } catch(e){}
         clearInterval(autosaveTimer);
     });

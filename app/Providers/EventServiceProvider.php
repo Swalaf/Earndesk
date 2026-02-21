@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Services\EarnDeskService;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,6 +29,25 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Ensure permanent referral task exists when app boots
+        // Only run if the column exists (after migrations)
+        try {
+            if (\Schema::hasColumn('tasks', 'is_permanent_referral')) {
+                EarnDeskService::ensurePermanentReferralTask();
+            }
+        } catch (\Exception $e) {
+            // Ignore if table doesn't exist yet
+        }
+        
+        // Also ensure it's created/updated on every user login
+        Event::listen(Authenticated::class, function ($event) {
+            try {
+                if (\Schema::hasColumn('tasks', 'is_permanent_referral')) {
+                    EarnDeskService::ensurePermanentReferralTask();
+                }
+            } catch (\Exception $e) {
+                // Ignore if table doesn't exist yet
+            }
+        });
     }
 }

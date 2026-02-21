@@ -38,7 +38,7 @@ return new class extends Migration
             $table->integer('xp_amount');
             $table->string('action_type'); // task_completed, referral, streak, milestone, etc.
             $table->string('description')->nullable();
-            $table->foreignId('related_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('related_id')->nullable()->unsignedBigInteger('related_id')->index()->nullOnDelete();
             $table->timestamps();
 
             $table->index('user_id');
