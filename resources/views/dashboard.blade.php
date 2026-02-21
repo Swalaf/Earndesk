@@ -29,7 +29,6 @@
                     <h2 class="text-2xl font-bold mb-2">Activate Your Account</h2>
                     <p class="text-indigo-100 mb-4">
                         Pay ₦1,000 activation fee to unlock all features and start earning.
-                        <br><small class="text-indigo-200">Referred users pay ₦2,000 (₦500 goes to your referrer!)</small>
                     </p>
                     <a href="{{ route('wallet.activate') }}" class="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-all shadow-lg">
                         <i class="fas fa-rocket mr-2"></i>Activate Now
