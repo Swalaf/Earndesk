@@ -202,38 +202,54 @@ class SwiftKudiService
             $wallet->activated_at = now();
             $wallet->save();
 
-            // Create activation log
+            // Create activation log (wrap in try-catch in case table doesn't exist)
             $referralBonusAmount = $isReferred ? SystemSetting::getNumber('referrer_bonus', self::REFERRER_BONUS) : 0;
             $platformRevenue = max(0, $activationFee - $referralBonusAmount);
             
-            ActivationLog::create([
-                'user_id' => $user->id,
-                'activation_type' => $isReferred ? 'referral' : 'normal',
-                'activation_fee' => $activationFee,
-                'referral_bonus' => $referralBonusAmount,
-                'platform_revenue' => $platformRevenue,
-                'status' => 'completed',
-                'reference' => 'ACT-' . strtoupper(uniqid()),
-            ]);
+            try {
+                ActivationLog::create([
+                    'user_id' => $user->id,
+                    'activation_type' => $isReferred ? 'referral' : 'normal',
+                    'activation_fee' => $activationFee,
+                    'referral_bonus' => $referralBonusAmount,
+                    'platform_revenue' => $platformRevenue,
+                    'status' => 'completed',
+                    'reference' => 'ACT-' . strtoupper(uniqid()),
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Failed to create activation log', ['error' => $e->getMessage()]);
+            }
 
-            // Auto-aggregate revenue for today
-            RevenueAggregator::aggregateForDate(now()->toDateString());
+            // Auto-aggregate revenue for today (wrap in try-catch)
+            try {
+                RevenueAggregator::aggregateForDate(now()->toDateString());
+            } catch (\Exception $e) {
+                Log::warning('Failed to aggregate revenue', ['error' => $e->getMessage()]);
+            }
 
             // Credit referrer if applicable
             if ($isReferred && $referrer) {
                 $referrerBonus = SystemSetting::getNumber('referrer_bonus', self::REFERRER_BONUS);
                 if ($referrer->wallet) {
-                    $referrer->wallet->addWithdrawable($referrerBonus, 'referral_bonus', 'Referral bonus for activating ' . $user->name);
+                    try {
+                        $referrer->wallet->addWithdrawable($referrerBonus, 'referral_bonus', 'Referral bonus for activating ' . $user->name);
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to credit referrer bonus', ['error' => $e->getMessage()]);
+                    }
                 }
 
                 // Create referral record if not exists
-                $referral = Referral::where('referrer_id', $referrer->id)
-                    ->where('referred_user_id', $user->id)
-                    ->first();
-                if ($referral) {
-                    $referral->reward_earned = ($referral->reward_earned ?? 0) + $referrerBonus;
-                    $referral->is_activated = true;
-                    $referral->save();
+                try {
+                    $referral = Referral::where('referrer_id', $referrer->id)
+                        ->where('referred_user_id', $user->id)
+                        ->first();
+                    if ($referral) {
+                        $referral->reward_earned = ($referral->reward_earned ?? 0) + $referrerBonus;
+                        $referral->is_activated = true;
+                        $referral->save();
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Failed to update referral record', ['error' => $e->getMessage()]);
                 }
             }
 
