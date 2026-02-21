@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class Wallet extends Model
 {
@@ -20,7 +21,7 @@ class Wallet extends Model
         'is_activated',
         'activated_at',
         'currency',
-        // Earning categories
+        // Earning categories (optional - may not exist in all environments)
         'total_task_earnings',
         'total_referral_bonuses',
         'total_deposits',
@@ -36,12 +37,38 @@ class Wallet extends Model
         'escrow_balance' => 'decimal:2',
         'is_activated' => 'boolean',
         'activated_at' => 'datetime',
-        // Earning categories
+        // Earning categories (optional)
         'total_task_earnings' => 'decimal:2',
         'total_referral_bonuses' => 'decimal:2',
         'total_deposits' => 'decimal:2',
         'total_fees' => 'decimal:2',
     ];
+    
+    /**
+     * Check if earning categories columns exist
+     */
+    protected static function hasEarningCategories(): bool
+    {
+        static $hasColumns = null;
+        if ($hasColumns === null) {
+            $hasColumns = Schema::hasColumn('wallets', 'total_task_earnings');
+        }
+        return $hasColumns;
+    }
+    
+    /**
+     * Override the getAttribute method to handle missing columns
+     */
+    public function getAttribute($key)
+    {
+        // Return 0 for earning category columns if they don't exist
+        $earningCategories = ['total_task_earnings', 'total_referral_bonuses', 'total_deposits', 'total_fees'];
+        if (in_array($key, $earningCategories) && !self::hasEarningCategories()) {
+            return 0;
+        }
+        
+        return parent::getAttribute($key);
+    }
 
     /**
      * Currencies

@@ -227,23 +227,23 @@
                 
                 <!-- Hero Image/Stats Card -->
                 <div class="relative">
-                    <div class="glass-card rounded-3xl p-8 shadow-2xl">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="text-center p-6 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-2xl">
-                                <div class="text-4xl md:text-5xl font-bold gradient-text">10K+</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">Active Users</div>
+                    <div class="glass-card rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                        <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                            <div class="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-xl sm:rounded-2xl">
+                                <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold gradient-text">10K+</div>
+                                <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">Active Users</div>
                             </div>
-                            <div class="text-center p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl">
-                                <div class="text-4xl md:text-5xl font-bold gradient-text-alt">₦50M+</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">Paid Out</div>
+                            <div class="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl sm:rounded-2xl">
+                                <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold gradient-text-alt">₦50M+</div>
+                                <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">Paid Out</div>
                             </div>
-                            <div class="text-center p-6 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-2xl">
-                                <div class="text-4xl md:text-5xl font-bold text-pink-500">500+</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">Tasks Daily</div>
+                            <div class="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-xl sm:rounded-2xl">
+                                <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-pink-500">500+</div>
+                                <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">Tasks Daily</div>
                             </div>
-                            <div class="text-center p-6 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-2xl">
-                                <div class="text-4xl md:text-5xl font-bold text-yellow-500">4.9★</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">User Rating</div>
+                            <div class="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-xl sm:rounded-2xl">
+                                <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-yellow-500">4.9★</div>
+                                <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">User Rating</div>
                             </div>
                         </div>
                         

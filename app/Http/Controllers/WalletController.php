@@ -31,16 +31,31 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         
-        // Get or create wallet
-        $wallet = $user->wallet ?? Wallet::create([
-            'user_id' => $user->id,
-            'withdrawable_balance' => 0,
-            'promo_credit_balance' => 0,
-            'total_earned' => 0,
-            'total_spent' => 0,
-            'pending_balance' => 0,
-            'escrow_balance' => 0,
-        ]);
+        // Get or create wallet with error handling for missing columns
+        try {
+            $wallet = $user->wallet ?? Wallet::create([
+                'user_id' => $user->id,
+                'withdrawable_balance' => 0,
+                'promo_credit_balance' => 0,
+                'total_earned' => 0,
+                'total_spent' => 0,
+                'pending_balance' => 0,
+                'escrow_balance' => 0,
+            ]);
+        } catch (\Exception $e) {
+            Log::warning('Wallet creation failed, trying without earning categories', ['error' => $e->getMessage()]);
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'withdrawable_balance' => 0,
+                    'promo_credit_balance' => 0,
+                    'total_earned' => 0,
+                    'total_spent' => 0,
+                    'pending_balance' => 0,
+                    'escrow_balance' => 0,
+                ]
+            );
+        }
 
         // Get transactions
         $transactions = Transaction::where('user_id', $user->id)
@@ -88,17 +103,34 @@ class WalletController extends Controller
     public function activate()
     {
         $user = Auth::user();
-        $wallet = $user->wallet ?? Wallet::create([
-            'user_id' => $user->id,
-            'withdrawable_balance' => 0,
-            'promo_credit_balance' => 0,
-            'total_earned' => 0,
-            'total_spent' => 0,
-            'pending_balance' => 0,
-            'escrow_balance' => 0,
-        ]);
+        
+        try {
+            $wallet = $user->wallet ?? Wallet::create([
+                'user_id' => $user->id,
+                'withdrawable_balance' => 0,
+                'promo_credit_balance' => 0,
+                'total_earned' => 0,
+                'total_spent' => 0,
+                'pending_balance' => 0,
+                'escrow_balance' => 0,
+            ]);
+        } catch (\Exception $e) {
+            // If wallet creation fails (e.g., missing columns), try without the new columns
+            Log::warning('Wallet creation failed, trying without earning categories', ['error' => $e->getMessage()]);
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'withdrawable_balance' => 0,
+                    'promo_credit_balance' => 0,
+                    'total_earned' => 0,
+                    'total_spent' => 0,
+                    'pending_balance' => 0,
+                    'escrow_balance' => 0,
+                ]
+            );
+        }
 
-        $isActivated = $wallet->is_activated;
+        $isActivated = $wallet->is_activated ?? false;
         $activationFee = User::getActivationFee();
         $referredActivationFee = User::getReferredActivationFee();
 
