@@ -42,7 +42,10 @@
                                     <i class="fas fa-star"></i> Featured
                                 </span>
                             @endif
-                            <span class="px-3 py-1.5 @if($service->status === 'active') bg-green-400 @else bg-gray-400 @endif text-white text-sm font-medium rounded-full">
+                            @php
+                                $statusClass = $service->status === 'active' ? 'bg-green-400' : 'bg-gray-400';
+                            @endphp
+                            <span class="px-3 py-1.5 {{ $statusClass }} text-white text-sm font-medium rounded-full">
                                 {{ ucfirst($service->status) }}
                             </span>
                         </div>

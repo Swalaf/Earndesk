@@ -59,26 +59,23 @@
                             Amount (₦)
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <span class="text-gray-500 dark:text-gray-400 sm:text-sm">₦</span>
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                                <span class="text-gray-500 dark:text-gray-400 text-lg font-medium">₦</span>
                             </div>
                             <input type="number" name="amount" id="amount" min="100" step="1"
-                                class="block w-full pl-8 pr-12 py-4 text-lg bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                class="block w-full pl-10 pr-4 py-4 text-lg bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                 placeholder="Enter amount" 
                                 value="{{ session('insufficient_balance_required') ? session('insufficient_balance_required') : old('amount', 0) }}"
                                 required>
-                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <span class="text-gray-500 dark:text-gray-400 sm:text-sm">NGN</span>
-                            </div>
                         </div>
                         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Minimum deposit: ₦100</p>
                     </div>
 
                     <!-- Quick Amounts -->
-                    <div class="grid grid-cols-4 gap-3 mb-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6">
                         @foreach([500, 1000, 2000, 5000] as $amount)
                         <button type="button" onclick="(function(){var el=document.getElementById('amount'); el.value={{ $amount }}; el.dispatchEvent(new Event('input')); })()"
-                            class="py-2 px-4 bg-gray-100 dark:bg-dark-800 hover:bg-green-100 dark:hover:bg-green-500/20 text-gray-700 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 rounded-xl font-medium transition-colors text-sm">
+                            class="py-3 px-3 bg-gray-100 dark:bg-dark-800 hover:bg-green-100 dark:hover:bg-green-500/20 text-gray-700 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 rounded-xl font-medium transition-colors text-sm whitespace-nowrap">
                             ₦{{ number_format($amount) }}
                         </button>
                         @endforeach
