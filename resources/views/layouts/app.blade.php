@@ -777,7 +777,7 @@
                         </div>
                         <span class="font-bold text-white">EarnDesk</span>
                     </div>
-                    <p class="text-sm text-gray-500">© 2024 EarnDesk. All rights reserved.</p>
+                    <p class="text-sm text-gray-500">© {{ date('Y') }} EarnDesk. All rights reserved.</p>
                 </div>
             </div>
         </footer>

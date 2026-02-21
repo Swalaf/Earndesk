@@ -100,7 +100,7 @@
         <!-- Footer -->
         <footer class="py-4 lg:py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <p class="text-sm text-gray-500">© 2024 EarnDesk. All rights reserved.</p>
+                <p class="text-sm text-gray-500">© {{ date('Y') }} EarnDesk. All rights reserved.</p>
             </div>
         </footer>
     </div>
