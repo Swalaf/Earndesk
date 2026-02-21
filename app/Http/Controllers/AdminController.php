@@ -14,7 +14,7 @@ use App\Models\ActivationLog;
 use App\Models\Currency;
 use App\Models\TaskCategory;
 use App\Models\Badge;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +23,7 @@ class AdminController extends Controller
 {
     protected $earnDeskService;
 
-    public function __construct(EarnDeskService $earnDeskService)
+    public function __construct(SwiftKudiService $earnDeskService)
     {
         $this->earnDeskService = $earnDeskService;
         

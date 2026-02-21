@@ -12,8 +12,8 @@ class TestEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('EarnDesk SMTP Test Email')
+        return $this->subject('SwiftKudi SMTP Test Email')
                     ->view('emails.test')
-                    ->with(['message' => 'This is a test email sent from EarnDesk to verify SMTP settings.']);
+                    ->with(['message' => 'This is a test email sent from SwiftKudi to verify SMTP settings.']);
     }
 }

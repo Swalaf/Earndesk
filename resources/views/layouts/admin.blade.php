@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Panel - EarnDesk')</title>
+    <title>@yield('title', 'Admin Panel - SwiftKudi')</title>
     
     {{-- Favicon --}}
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
@@ -175,7 +175,7 @@
                     <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                         <i class="fas fa-coins text-white text-sm"></i>
                     </div>
-                    <span class="font-bold text-lg bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">EarnDesk</span>
+                    <span class="font-bold text-lg bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">SwiftKudi</span>
                 </a>
                 <!-- Mobile close button -->
                 <button id="close-sidebar" class="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800">

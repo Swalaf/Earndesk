@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Task Bundles - EarnDesk')
+@section('title', 'Task Bundles - SwiftKudi')
 
 @section('content')
 <div class="py-6">

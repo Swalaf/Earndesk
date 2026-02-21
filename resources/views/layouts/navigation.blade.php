@@ -7,9 +7,9 @@
                 <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center">
                         <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-lg">E</span>
+                            <span class="text-white font-bold text-lg">SK</span>
                         </div>
-                        <span class="ml-2 text-xl font-bold text-gray-900">EarnDesk</span>
+                        <span class="ml-2 text-xl font-bold text-gray-900">SwiftKudi</span>
                     </a>
                 </div>
 
@@ -302,7 +302,7 @@
                     <i class="fas fa-chart-line mr-2"></i> My Growth Listings
                 </x-responsive-nav-link>
 
-                @if(Auth::user()->email === 'admin@earndesk.com')
+                @if(Auth::user()->email === 'admin@swiftkudi.com')
                 <x-responsive-nav-link :href="route('admin.index')">
                     <i class="fas fa-cog mr-2"></i> Admin Panel
                 </x-responsive-nav-link>

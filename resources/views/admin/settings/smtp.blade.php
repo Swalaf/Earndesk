@@ -127,11 +127,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="smtp_from_email" class="block text-sm font-medium text-gray-700 dark:text-gray-200">From Email Address</label>
-                            <input type="email" name="smtp_from_email" id="smtp_from_email" value="{{ old('smtp_from_email', $settingsByKey['smtp_from_email'] ?? '') }}" placeholder="noreply@earndesk.com" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" {{ auth()->user()->hasPermission('\App\\Models\\AdminRole::PERMISSION_SETTINGS_EDIT') ? '' : 'readonly' }}>
+                            <input type="email" name="smtp_from_email" id="smtp_from_email" value="{{ old('smtp_from_email', $settingsByKey['smtp_from_email'] ?? '') }}" placeholder="noreply@swiftkudi.com" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" {{ auth()->user()->hasPermission('\App\\Models\\AdminRole::PERMISSION_SETTINGS_EDIT') ? '' : 'readonly' }}>
                         </div>
                         <div>
                             <label for="smtp_from_name" class="block text-sm font-medium text-gray-700 dark:text-gray-200">From Name</label>
-                            <input type="text" name="smtp_from_name" id="smtp_from_name" value="{{ old('smtp_from_name', $settingsByKey['smtp_from_name'] ?? 'EarnDesk') }}" placeholder="EarnDesk" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" {{ auth()->user()->hasPermission('\App\\Models\\AdminRole::PERMISSION_SETTINGS_EDIT') ? '' : 'readonly' }}>
+                            <input type="text" name="smtp_from_name" id="smtp_from_name" value="{{ old('smtp_from_name', $settingsByKey['smtp_from_name'] ?? 'SwiftKudi') }}" placeholder="EarnDesk" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" {{ auth()->user()->hasPermission('\App\\Models\\AdminRole::PERMISSION_SETTINGS_EDIT') ? '' : 'readonly' }}>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                     <div class="flex items-end gap-4">
                         <div class="flex-1">
                             <label for="test_email" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Test Email Address</label>
-                            <input type="email" id="test_email" name="test_email" placeholder="admin@earndesk.com" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="email" id="test_email" name="test_email" placeholder="admin@swiftkudi.com" class="mt-1 block w-full text-base py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         @if(auth()->user()->hasPermission('\App\\Models\\AdminRole::PERMISSION_SETTINGS_EDIT'))
                         <button id="send-test" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

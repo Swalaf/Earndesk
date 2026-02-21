@@ -15,7 +15,7 @@ class TaskService
 {
     protected $earnDeskService;
 
-    public function __construct(EarnDeskService $earnDeskService)
+    public function __construct(SwiftKudiService $earnDeskService)
     {
         $this->earnDeskService = $earnDeskService;
     }

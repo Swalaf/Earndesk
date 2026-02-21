@@ -9,7 +9,7 @@ use App\Models\TaskCompletion;
 use App\Models\TaskBundle;
 use App\Models\Badge;
 use App\Models\Referral;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,7 +66,7 @@ class DashboardController extends Controller
             ->count();
 
         // Ensure permanent referral task exists and always show it at the top
-        $referralTask = EarnDeskService::ensurePermanentReferralTask();
+        $referralTask = SwiftKudiService::ensurePermanentReferralTask();
         
         // Available tasks for workers - always show referral task at the top
         $availableTasks = [];
@@ -196,7 +196,7 @@ class DashboardController extends Controller
         }
 
         // Ensure permanent referral task exists
-        $referralTask = EarnDeskService::ensurePermanentReferralTask();
+        $referralTask = SwiftKudiService::ensurePermanentReferralTask();
 
         // Available tasks
         $availableTasks = Task::active()

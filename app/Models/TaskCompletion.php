@@ -134,7 +134,7 @@ class TaskCompletion extends Model
      * Mark as approved
      *
      * Note: This method intentionally does NOT perform wallet transfers or award earnings.
-     * Payment and escrow handling must be performed by the service layer (EarnDeskService)
+     * Payment and escrow handling must be performed by the service layer (SwiftKudiService)
      * which will call this method inside the same transaction after validating escrow.
      */
     public function approve(float $rewardAmount = null, string $notes = null): bool

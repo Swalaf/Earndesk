@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Task - EarnDesk')
+@section('title', 'Create Task - SwiftKudi')
 
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-dark-950">

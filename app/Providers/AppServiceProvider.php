@@ -31,14 +31,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TaskCreationService::class, function ($app) {
             return new TaskCreationService(
                 $app->make(TaskRepository::class),
-                $app->make(\App\Services\EarnDeskService::class)
+                $app->make(\App\Services\SwiftKudiService::class)
             );
         });
 
         // Register new TaskService
         $this->app->singleton(TaskService::class, function ($app) {
             return new TaskService(
-                $app->make(\App\Services\EarnDeskService::class)
+                $app->make(\App\Services\SwiftKudiService::class)
             );
         });
 

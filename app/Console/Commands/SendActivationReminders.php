@@ -15,7 +15,7 @@ class SendActivationReminders extends Command
      *
      * @var string
      */
-    protected $signature = 'earndesk:send-activation-reminders';
+    protected $signature = 'swiftkudi:send-activation-reminders';
 
     /**
      * The console command description.
@@ -55,7 +55,7 @@ class SendActivationReminders extends Command
 
         $users = User::where('created_at', '>=', $threshold)
             ->where('created_at', '<', $now->copy()->subHours(5)->subMinute())
-            ->where('wallet_balance', '<', config('earndesk.activation_fee', 1000))
+            ->where('wallet_balance', '<', config('swiftkudi.activation_fee', 1000))
             ->whereDoesntHave('notifications', function ($query) {
                 $query->where('type', 'activation_reminder');
             })
@@ -82,7 +82,7 @@ class SendActivationReminders extends Command
 
         $users = User::where('created_at', '>=', $threshold)
             ->where('created_at', '<', $now->copy()->subHours(23)->subMinute())
-            ->where('wallet_balance', '<', config('earndesk.activation_fee', 1000))
+            ->where('wallet_balance', '<', config('swiftkudi.activation_fee', 1000))
             ->whereHas('notifications', function ($query) {
                 $query->where('type', 'activation_reminder')
                     ->where('data', 'LIKE', '%"reminder_type":"first"%');
@@ -114,7 +114,7 @@ class SendActivationReminders extends Command
 
         $users = User::where('created_at', '>=', $threshold)
             ->where('created_at', '<', $now->copy()->subHours(47)->subMinute())
-            ->where('wallet_balance', '<', config('earndesk.activation_fee', 1000))
+            ->where('wallet_balance', '<', config('swiftkudi.activation_fee', 1000))
             ->whereHas('notifications', function ($query) {
                 $query->where('type', 'activation_reminder')
                     ->where('data', 'LIKE', '%"reminder_type":"second"%');

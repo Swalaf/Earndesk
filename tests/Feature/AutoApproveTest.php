@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Task;
 use App\Models\TaskCompletion;
 use App\Models\Wallet;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use Illuminate\Support\Facades\Artisan;
 
 class AutoApproveTest extends TestCase

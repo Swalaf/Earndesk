@@ -684,7 +684,7 @@ class SystemSetting extends Model
     {
         $defaults = [
             // General
-            'site_name' => ['value' => 'EarnDesk', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
+            'site_name' => ['value' => 'SwiftKudi', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
             'site_url' => ['value' => url('/'), 'group' => self::GROUP_GENERAL, 'type' => 'text'],
             'site_logo' => ['value' => '', 'group' => self::GROUP_GENERAL, 'type' => 'text'],
             
@@ -751,7 +751,7 @@ class SystemSetting extends Model
             'smtp_password' => ['value' => '', 'group' => self::GROUP_SMTP, 'type' => 'encrypted'],
             'smtp_encryption' => ['value' => 'tls', 'group' => self::GROUP_SMTP, 'type' => 'text'],
             'smtp_from_email' => ['value' => '', 'group' => self::GROUP_SMTP, 'type' => 'text'],
-            'smtp_from_name' => ['value' => 'EarnDesk', 'group' => self::GROUP_SMTP, 'type' => 'text'],
+            'smtp_from_name' => ['value' => 'SwiftKudi', 'group' => self::GROUP_SMTP, 'type' => 'text'],
             'smtp_enabled' => ['value' => false, 'group' => self::GROUP_SMTP, 'type' => 'boolean'],
 
             // Paystack
@@ -782,7 +782,7 @@ class SystemSetting extends Model
 
             // Email Templates
             'email_welcome_enabled' => ['value' => true, 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'boolean'],
-            'email_welcome_subject' => ['value' => 'Welcome to EarnDesk!', 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'text'],
+            'email_welcome_subject' => ['value' => 'Welcome to SwiftKudi!', 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'text'],
             'email_task_approved_enabled' => ['value' => true, 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'boolean'],
             'email_task_approved_subject' => ['value' => 'Your Task has been Approved!', 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'text'],
             'email_task_rejected_enabled' => ['value' => true, 'group' => self::GROUP_EMAIL_TEMPLATES, 'type' => 'boolean'],

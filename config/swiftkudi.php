@@ -2,10 +2,10 @@
 
 /*
 |--------------------------------------------------------------------------
-| EarnDesk Configuration
+| SwiftKudi Configuration
 |--------------------------------------------------------------------------
 |
-| This file contains application-specific configuration for EarnDesk.
+| This file contains application-specific configuration for SwiftKudi.
 | Values here can be overridden in the .env file.
 |
 */
@@ -140,5 +140,15 @@ return [
         // Enable rate limiting
         'rate_limiting' => env('TASK_RATE_LIMITING_ENABLED', true),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activation Fee
+    |--------------------------------------------------------------------------
+    |
+    | Settings for user activation fee.
+    |
+    */
+    'activation_fee' => env('ACTIVATION_FEE', 1000),
 
 ];

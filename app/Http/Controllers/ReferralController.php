@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Referral;
 use App\Models\Transaction;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -76,7 +76,7 @@ class ReferralController extends Controller
         return response()->json([
             'success' => true,
             'user' => $referral->user->name,
-            'reward' => '₦' . number_format(EarnDeskService::REFERRER_BONUS, 2),
+            'reward' => '₦' . number_format(SwiftKudiService::REFERRER_BONUS, 2),
         ]);
     }
 
@@ -90,7 +90,7 @@ class ReferralController extends Controller
 
         DB::transaction(function () use ($referral) {
             // Use configured bonus from service constants
-            $bonus = EarnDeskService::REFERRER_BONUS;
+            $bonus = SwiftKudiService::REFERRER_BONUS;
 
             $referrerWallet = $referral->user->wallet;
             if (!$referrerWallet) {

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Revenue Analytics - EarnDesk')
+@section('title', 'Revenue Analytics - SwiftKudi')
 
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-dark-950">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Start Your Journey - EarnDesk')
+@section('title', 'Start Your Journey - SwiftKudi')
 
 @section('content')
 <div class="py-8">
@@ -9,7 +9,7 @@
         <div class="text-center mb-8">
             <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-full px-4 py-2 mb-4">
                 <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">Welcome to EarnDesk 🚀</span>
+                <span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">Welcome to SwiftKudi 🚀</span>
             </div>
             <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 Start Your Earning Journey

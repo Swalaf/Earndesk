@@ -19,7 +19,7 @@ use App\Services\RevenueAggregator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class EarnDeskService
+class SwiftKudiService
 {
     /**
      * Get the default currency code from settings
@@ -258,7 +258,7 @@ class EarnDeskService
             $existingTask->update([
                 'worker_reward_per_task' => $bonusAmount,
                 'title' => 'Referral Bonus - Earn ' . $currency . number_format($totalBonus) . ' for ' . $targetReferrals . ' Referrals!',
-                'description' => 'Invite friends to join EarnDesk and earn ' . $currency . number_format($bonusAmount) . ' for each friend who activates their account. Complete ' . $targetReferrals . ' activated referrals to earn ' . $currency . number_format($totalBonus) . ' bonus! Share your referral code and start earning today! This is a permanent task that stays active indefinitely.',
+                'description' => 'Invite friends to join SwiftKudi and earn ' . $currency . number_format($bonusAmount) . ' for each friend who activates their account. Complete ' . $targetReferrals . ' activated referrals to earn ' . $currency . number_format($totalBonus) . ' bonus! Share your referral code and start earning today! This is a permanent task that stays active indefinitely.',
                 'is_active' => true,
             ]);
             return $existingTask;
@@ -276,7 +276,7 @@ class EarnDeskService
         return Task::create([
             'user_id' => $firstUser ? $firstUser->id : 1,
             'title' => 'Referral Bonus - Earn ' . $currency . number_format($totalBonus) . ' for ' . $targetReferrals . ' Referrals!',
-            'description' => 'Invite friends to join EarnDesk and earn ' . $currency . number_format($bonusAmount) . ' for each friend who activates their account. Complete ' . $targetReferrals . ' activated referrals to earn ' . $currency . number_format($totalBonus) . ' bonus! Share your referral code and start earning today! This is a permanent task that stays active indefinitely.',
+            'description' => 'Invite friends to join SwiftKudi and earn ' . $currency . number_format($bonusAmount) . ' for each friend who activates their account. Complete ' . $targetReferrals . ' activated referrals to earn ' . $currency . number_format($totalBonus) . ' bonus! Share your referral code and start earning today! This is a permanent task that stays active indefinitely.',
             'platform' => 'other',
             'task_type' => Task::TYPE_REFERRAL,
             'target_url' => url('/register'),

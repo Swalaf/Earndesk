@@ -48,7 +48,7 @@
                                 <i class="fas fa-tag mr-2 text-gray-400"></i>Site Name
                             </label>
                             <input type="text" name="site_name" id="site_name"
-                                value="{{ old('site_name', $settingsByKey['site_name'] ?? 'EarnDesk') }}"
+                                value="{{ old('site_name', $settingsByKey['site_name'] ?? 'SwiftKudi') }}"
                                 class="w-full rounded-xl border-gray-200 dark:border-dark-700 dark:bg-dark-800 focus:border-indigo-500 focus:ring-indigo-500"
                                 placeholder="Your site name">
                         </div>

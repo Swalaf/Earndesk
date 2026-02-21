@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Service Providers Directory - EarnDesk')
+@section('title', 'Service Providers Directory - SwiftKudi')
 
 @section('content')
 <div class="py-8">
@@ -8,7 +8,7 @@
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Service Providers</h1>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">Find skilled professionals on EarnDesk</p>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">Find skilled professionals on SwiftKudi</p>
         </div>
 
         @if($providers->isEmpty())

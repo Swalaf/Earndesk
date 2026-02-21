@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('revenue:aggregate')->dailyAt('02:00')->withoutOverlapping();
 
         // Run activation reminder check every hour
-        $schedule->command('earndesk:send-activation-reminders')->hourly();
+        $schedule->command('swiftkudi:send-activation-reminders')->hourly();
 
         // Auto-approve pending completions older than 48 hours, run every 30 minutes
         $schedule->command('tasks:auto-approve')->everyThirtyMinutes()->withoutOverlapping();

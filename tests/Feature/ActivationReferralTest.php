@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Wallet;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 
 class ActivationReferralTest extends TestCase
 {
@@ -17,7 +17,7 @@ class ActivationReferralTest extends TestCase
         $user = User::factory()->create();
         $wallet = Wallet::create(['user_id' => $user->id, 'withdrawable_balance' => 1000, 'promo_credit_balance' => 0]);
 
-        $service = $this->app->make(EarnDeskService::class);
+        $service = $this->app->make(SwiftKudiService::class);
         $res = $service->activateUser($user, null);
 
         $this->assertTrue($res['success']);
@@ -32,7 +32,7 @@ class ActivationReferralTest extends TestCase
         $referred = User::factory()->create();
         $referredWallet = Wallet::create(['user_id' => $referred->id, 'withdrawable_balance' => 2000, 'promo_credit_balance' => 0]);
 
-        $service = $this->app->make(EarnDeskService::class);
+        $service = $this->app->make(SwiftKudiService::class);
         $res = $service->activateUser($referred, $referrer);
 
         $this->assertTrue($res['success']);

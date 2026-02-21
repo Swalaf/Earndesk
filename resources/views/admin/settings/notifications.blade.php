@@ -64,7 +64,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_welcome_from_name" value="{{ old('notif_welcome_from_name', $settingsByKey['notif_welcome_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_welcome_from_name" value="{{ old('notif_welcome_from_name', $settingsByKey['notif_welcome_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -90,7 +90,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_task_approved_from_name" value="{{ old('notif_task_approved_from_name', $settingsByKey['notif_task_approved_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_task_approved_from_name" value="{{ old('notif_task_approved_from_name', $settingsByKey['notif_task_approved_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -116,7 +116,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_task_rejected_from_name" value="{{ old('notif_task_rejected_from_name', $settingsByKey['notif_task_rejected_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_task_rejected_from_name" value="{{ old('notif_task_rejected_from_name', $settingsByKey['notif_task_rejected_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -142,7 +142,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_earnings_unlocked_from_name" value="{{ old('notif_earnings_unlocked_from_name', $settingsByKey['notif_earnings_unlocked_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_earnings_unlocked_from_name" value="{{ old('notif_earnings_unlocked_from_name', $settingsByKey['notif_earnings_unlocked_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -168,7 +168,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_activation_reminder_from_name" value="{{ old('notif_activation_reminder_from_name', $settingsByKey['notif_activation_reminder_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_activation_reminder_from_name" value="{{ old('notif_activation_reminder_from_name', $settingsByKey['notif_activation_reminder_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -194,7 +194,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_password_reset_from_name" value="{{ old('notif_password_reset_from_name', $settingsByKey['notif_password_reset_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_password_reset_from_name" value="{{ old('notif_password_reset_from_name', $settingsByKey['notif_password_reset_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -220,7 +220,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_email_verify_from_name" value="{{ old('notif_email_verify_from_name', $settingsByKey['notif_email_verify_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_email_verify_from_name" value="{{ old('notif_email_verify_from_name', $settingsByKey['notif_email_verify_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -246,7 +246,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_withdrawal_from_name" value="{{ old('notif_withdrawal_from_name', $settingsByKey['notif_withdrawal_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_withdrawal_from_name" value="{{ old('notif_withdrawal_from_name', $settingsByKey['notif_withdrawal_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -272,7 +272,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sender Name</label>
-                                <input type="text" name="notif_referral_bonus_from_name" value="{{ old('notif_referral_bonus_from_name', $settingsByKey['notif_referral_bonus_from_name'] ?? config('app.name', 'EarnDesk')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="text" name="notif_referral_bonus_from_name" value="{{ old('notif_referral_bonus_from_name', $settingsByKey['notif_referral_bonus_from_name'] ?? config('app.name', 'SwiftKudi')) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div class="mt-4">

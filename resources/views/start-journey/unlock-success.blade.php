@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Earnings Unlocked! - EarnDesk')
+@section('title', 'Earnings Unlocked! - SwiftKudi')
 
 @push('styles')
 <style>

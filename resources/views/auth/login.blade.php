@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <x-slot name="title">Login - EarnDesk</x-slot>
+    <x-slot name="title">Login - SwiftKudi</x-slot>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-6" :status="session('status')" />

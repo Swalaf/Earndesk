@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnDesk - Nigeria's #1 Micro-Task Platform | Earn Money Completing Tasks</title>
-    <meta name="description" content="EarnDesk is Nigeria's leading micro-task marketplace. Complete simple tasks like likes, follows, shares, and reviews to earn ₦30 - ₦5,000 per task. Start earning today!">
+    <title>SwiftKudi - Nigeria's #1 Micro-Task Platform | Earn Money Completing Tasks</title>
+    <meta name="description" content="SwiftKudi is Nigeria's leading micro-task marketplace. Complete simple tasks like likes, follows, shares, and reviews to earn ₦30 - ₦5,000 per task. Start earning today!">
     <meta name="keywords" content="earn money online Nigeria, micro-tasks, freelance Nigeria, side hustle, work from home Nigeria, task marketplace">
-    <meta name="author" content="EarnDesk">
-    <meta property="og:title" content="EarnDesk - Nigeria's #1 Micro-Task Platform">
-    <meta property="og:description" content="Complete tasks. Earn money. Join thousands of Nigerians earning on EarnDesk.">
+    <meta name="author" content="SwiftKudi">
+    <meta property="og:title" content="SwiftKudi - Nigeria's #1 Micro-Task Platform">
+    <meta property="og:description" content="Complete tasks. Earn money. Join thousands of Nigerians earning on SwiftKudi.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://earndesk.ng">
+    <meta property="og:url" content="https://swiftkudi.com">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="EarnDesk - Nigeria's #1 Micro-Task Platform">
-    <meta name="twitter:description" content="Complete tasks. Earn money. Join thousands of Nigerians earning on EarnDesk.">
-    <link rel="canonical" href="https://earndesk.ng">
+    <meta name="twitter:title" content="SwiftKudi - Nigeria's #1 Micro-Task Platform">
+    <meta name="twitter:description" content="Complete tasks. Earn money. Join thousands of Nigerians earning on SwiftKudi.">
+    <link rel="canonical" href="https://swiftkudi.com">
     
     {{-- Laravel Mix Assets - Tailwind CSS compiled via Mix --}}
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
@@ -112,7 +112,7 @@
                     <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                         <i class="fas fa-coins text-white text-lg"></i>
                     </div>
-                    <span class="ml-3 text-xl font-bold gradient-text">EarnDesk</span>
+                    <span class="ml-3 text-xl font-bold gradient-text">SwiftKudi</span>
                 </a>
                 <button onclick="closeMobileMenu()" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800">
                     <i class="fas fa-times text-xl"></i>
@@ -157,7 +157,7 @@
                         <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all">
                             <i class="fas fa-coins text-white text-base sm:text-lg"></i>
                         </div>
-                        <span class="ml-2 sm:ml-3 text-lg sm:text-xl font-bold font-heading gradient-text">EarnDesk</span>
+                        <span class="ml-2 sm:ml-3 text-lg sm:text-xl font-bold font-heading gradient-text">SwiftKudi</span>
                     </a>
                 </div>
                 <nav class="hidden md:flex items-center gap-6 lg:gap-8">
@@ -286,7 +286,7 @@
                     Everything You Need to <span class="gradient-text">Earn More</span>
                 </h2>
                 <p class="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-                    Discover all the ways EarnDesk helps you maximize your earnings and grow your income.
+                    Discover all the ways SwiftKudi helps you maximize your earnings and grow your income.
                 </p>
             </div>
             
@@ -517,7 +517,7 @@
                         <i class="fas fa-star text-yellow-400"></i>
                         <i class="fas fa-star text-yellow-400"></i>
                     </div>
-                    <p class="text-gray-400 mb-6">"I started with just the activation fee and now I'm earning over ₦50,000 monthly. EarnDesk changed my life! The tasks are simple and payments are instant."</p>
+                    <p class="text-gray-400 mb-6">"I started with just the activation fee and now I'm earning over ₦50,000 monthly. SwiftKudi changed my life! The tasks are simple and payments are instant."</p>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">A</div>
                         <div>
@@ -536,7 +536,7 @@
                         <i class="fas fa-star text-yellow-400"></i>
                         <i class="fas fa-star text-yellow-400"></i>
                     </div>
-                    <p class="text-gray-400 mb-6">"As a student, EarnDesk helps me pay my bills without affecting my studies. I do tasks during my free time. Best decision ever!"</p>
+                    <p class="text-gray-400 mb-6">"As a student, SwiftKudi helps me pay my bills without affecting my studies. I do tasks during my free time. Best decision ever!"</p>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold">C</div>
                         <div>
@@ -555,7 +555,7 @@
                         <i class="fas fa-star text-yellow-400"></i>
                         <i class="fas fa-star text-yellow-400"></i>
                     </div>
-                    <p class="text-gray-400 mb-6">"I offer graphic design services on EarnDesk and I've gotten over 50 orders. The platform fee is fair and I get paid immediately."</p>
+                    <p class="text-gray-400 mb-6">"I offer graphic design services on SwiftKudi and I've gotten over 50 orders. The platform fee is fair and I get paid immediately."</p>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center text-white font-bold">F</div>
                         <div>
@@ -593,7 +593,7 @@
                         <i class="fas fa-star text-yellow-400"></i>
                         <i class="fas fa-star text-yellow-400"></i>
                     </div>
-                    <p class="text-gray-400 mb-6">"I sell my eBooks on EarnDesk's digital products marketplace. Made over ₦100K in my first month! The exposure is incredible."</p>
+                    <p class="text-gray-400 mb-6">"I sell my eBooks on SwiftKudi's digital products marketplace. Made over ₦100K in my first month! The exposure is incredible."</p>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold">T</div>
                         <div>
@@ -646,7 +646,7 @@
         <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
             <h2 class="text-2xl sm:text-3xl md:text-5xl font-heading font-bold text-white mb-4 md:mb-6">Ready to Start Earning?</h2>
-            <p class="text-lg md:text-xl text-indigo-100 mb-6 md:mb-8 max-w-2xl mx-auto">Join thousands of Nigerians already earning on EarnDesk. Start your journey to financial freedom today!</p>
+            <p class="text-lg md:text-xl text-indigo-100 mb-6 md:mb-8 max-w-2xl mx-auto">Join thousands of Nigerians already earning on SwiftKudi. Start your journey to financial freedom today!</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-indigo-600 font-bold rounded-xl shadow-xl hover:bg-gray-100 transition-all transform hover:scale-105">
                     <i class="fas fa-rocket mr-2"></i>
@@ -673,7 +673,7 @@
             <div class="space-y-4">
                 <details class="group bg-dark-800 rounded-xl p-4 md:p-6 cursor-pointer">
                     <summary class="flex justify-between items-center font-semibold text-white">
-                        <span>How do I start earning on EarnDesk?</span>
+                        <span>How do I start earning on SwiftKudi?</span>
                         <i class="fas fa-chevron-down text-gray-500 group-open:rotate-180 transition-transform"></i>
                     </summary>
                     <p class="mt-4 text-gray-400">Simply create a free account, pay the one-time activation fee of ₦1,000, and start completing available tasks. You can withdraw your earnings anytime.</p>
@@ -697,10 +697,10 @@
                 
                 <details class="group bg-dark-800 rounded-xl p-4 md:p-6 cursor-pointer">
                     <summary class="flex justify-between items-center font-semibold text-white">
-                        <span>Is EarnDesk legit and safe?</span>
+                        <span>Is SwiftKudi legit and safe?</span>
                         <i class="fas fa-chevron-down text-gray-500 group-open:rotate-180 transition-transform"></i>
                     </summary>
-                    <p class="mt-4 text-gray-400">Yes! EarnDesk is a registered Nigerian company with over 10,000 active users and ₦50M+ paid out. We have a 4.9/5 rating from our community.</p>
+                    <p class="mt-4 text-gray-400">Yes! SwiftKudi is a registered Nigerian company with over 10,000 active users and ₦50M+ paid out. We have a 4.9/5 rating from our community.</p>
                 </details>
             </div>
         </div>
@@ -715,7 +715,7 @@
                         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                             <i class="fas fa-coins text-white text-sm"></i>
                         </div>
-                        <span class="ml-3 font-bold text-white text-lg">EarnDesk</span>
+                        <span class="ml-3 font-bold text-white text-lg">SwiftKudi</span>
                     </div>
                     <p class="text-gray-400 text-sm">Nigeria's #1 micro-task marketplace. Complete tasks, earn money, live free.</p>
                 </div>
@@ -756,7 +756,7 @@
                 </div>
             </div>
             <div class="border-t border-dark-700 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-sm text-gray-500">© {{ date('Y') }} EarnDesk. All rights reserved.</p>
+                <p class="text-sm text-gray-500">© {{ date('Y') }} SwiftKudi. All rights reserved.</p>
                 <div class="flex gap-4 md:gap-6 mt-4 md:mt-0">
                     <a href="#" class="text-sm text-gray-500 hover:text-gray-400">Privacy Policy</a>
                     <a href="#" class="text-sm text-gray-500 hover:text-gray-400">Terms of Service</a>

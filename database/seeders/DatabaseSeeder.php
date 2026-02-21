@@ -453,7 +453,7 @@ class DatabaseSeeder extends Seeder
     {
         // Create admin user
         $admin = User::firstOrCreate(
-            ['email' => 'admin@earndesk.com'],
+            ['email' => 'admin@swiftkudi.com'],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('password123'),
@@ -483,7 +483,7 @@ class DatabaseSeeder extends Seeder
 
         // Create demo client
         $client = User::firstOrCreate(
-            ['email' => 'client@earndesk.com'],
+            ['email' => 'client@swiftkudi.com'],
             [
                 'name' => 'Demo Client',
                 'password' => Hash::make('password123'),
@@ -503,7 +503,7 @@ class DatabaseSeeder extends Seeder
 
         // Create demo worker
         $worker = User::firstOrCreate(
-            ['email' => 'worker@earndesk.com'],
+            ['email' => 'worker@swiftkudi.com'],
             [
                 'name' => 'Demo Worker',
                 'password' => Hash::make('password123'),
@@ -525,9 +525,9 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->command->info('Sample users created successfully!');
-        $this->command->info('Admin: admin@earndesk.com / password123');
-        $this->command->info('Client: client@earndesk.com / password123');
-        $this->command->info('Worker: worker@earndesk.com / password123');
+        $this->command->info('Admin: admin@swiftkudi.com / password123');
+        $this->command->info('Client: client@swiftkudi.com / password123');
+        $this->command->info('Worker: worker@swiftkudi.com / password123');
     }
 
     /**
@@ -535,7 +535,7 @@ class DatabaseSeeder extends Seeder
      */
     protected function seedSampleTasks(): void
     {
-        $client = User::where('email', 'client@earndesk.com')->first();
+        $client = User::where('email', 'client@swiftkudi.com')->first();
         if (!$client) {
             $this->command->warn('Client user not found. Skip seeding tasks.');
             return;

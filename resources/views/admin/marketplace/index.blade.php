@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Marketplace Management - EarnDesk')
+@section('title', 'Marketplace Management - SwiftKudi')
 
 @section('content')
 <div class="py-8">

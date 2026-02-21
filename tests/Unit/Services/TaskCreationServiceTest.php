@@ -7,7 +7,7 @@ use App\Models\TaskCategory;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Repositories\TaskRepository;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use App\Services\TaskCreationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ class TaskCreationServiceTest extends TestCase
     private $taskRepository;
 
     /**
-     * @var EarnDeskService|\Mockery\Mock
+     * @var SwiftKudiService|\Mockery\Mock
      */
     private $earnDeskService;
 
@@ -51,7 +51,7 @@ class TaskCreationServiceTest extends TestCase
 
         // Create mock repositories
         $this->taskRepository = Mockery::mock(TaskRepository::class);
-        $this->earnDeskService = Mockery::mock(EarnDeskService::class);
+        $this->earnDeskService = Mockery::mock(SwiftKudiService::class);
 
         // Create the service with mocked dependencies
         $this->service = new TaskCreationService(

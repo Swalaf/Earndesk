@@ -85,7 +85,7 @@
                     <div class="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-2 lg:mr-3 shadow-lg shadow-indigo-500/20">
                         <i class="fas fa-coins text-white text-base lg:text-lg"></i>
                     </div>
-                    <span class="font-bold text-lg lg:text-xl bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">EarnDesk</span>
+                    <span class="font-bold text-lg lg:text-xl bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">SwiftKudi</span>
                 </a>
             </div>
         </header>
@@ -100,7 +100,7 @@
         <!-- Footer -->
         <footer class="py-4 lg:py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <p class="text-sm text-gray-500">© {{ date('Y') }} EarnDesk. All rights reserved.</p>
+                <p class="text-sm text-gray-500">© {{ date('Y') }} SwiftKudi. All rights reserved.</p>
             </div>
         </footer>
     </div>

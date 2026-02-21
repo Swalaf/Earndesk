@@ -80,7 +80,7 @@ class ActivationReminder extends Notification
             case 'second':
                 return 'High-Paying Tasks Available Now! 💰';
             case 'third':
-                return 'Join Thousands Earning on EarnDesk - Last Chance! 🚀';
+                return 'Join Thousands Earning on SwiftKudi - Last Chance! 🚀';
             default:
                 return 'Reminder: Complete Your Registration';
         }
@@ -91,12 +91,12 @@ class ActivationReminder extends Notification
      */
     protected function getContent(): array
     {
-        $activationFee = number_format(\App\Services\EarnDeskService::ACTIVATION_FEE);
+        $activationFee = number_format(\App\Services\SwiftKudiService::ACTIVATION_FEE);
 
         switch ($this->type) {
             case 'first':
                 return [
-                    'intro' => 'You registered on EarnDesk but haven\'t completed your activation yet.',
+                    'intro' => 'You registered on SwiftKudi but haven\'t completed your activation yet.',
                     'main' => "Great tasks are waiting for you! Activate now to start completing tasks and earning real money. Your ₦{$activationFee} activation fee gives you full access to the platform.",
                     'cta_url' => route('wallet.activate'),
                     'cta_text' => 'Activate Now',
@@ -118,7 +118,7 @@ class ActivationReminder extends Notification
             case 'third':
                 return [
                     'intro' => 'Last reminder before you miss out!',
-                    'main' => 'Join thousands of active earners on EarnDesk. Here\'s what our users are earning:',
+                    'main' => 'Join thousands of active earners on SwiftKudi. Here\'s what our users are earning:',
                     'main_stats' => [
                         '• Top earners: ₦50,000+ per month',
                         '• Average user: ₦15,000 - ₦25,000/month',
@@ -130,11 +130,11 @@ class ActivationReminder extends Notification
                 ];
             default:
                 return [
-                    'intro' => 'You registered on EarnDesk but haven\'t completed your activation yet.',
+                    'intro' => 'You registered on SwiftKudi but haven\'t completed your activation yet.',
                     'main' => 'Activate your account to start earning from tasks.',
                     'cta_url' => route('wallet.activate'),
                     'cta_text' => 'Activate Now',
-                    'outro' => 'Thank you for choosing EarnDesk!',
+                    'outro' => 'Thank you for choosing SwiftKudi!',
                 ];
         }
     }

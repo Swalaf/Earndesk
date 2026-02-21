@@ -7,7 +7,7 @@ use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -33,7 +33,7 @@ class EventServiceProvider extends ServiceProvider
         // Only run if the column exists (after migrations)
         try {
             if (\Schema::hasColumn('tasks', 'is_permanent_referral')) {
-                EarnDeskService::ensurePermanentReferralTask();
+                SwiftKudiService::ensurePermanentReferralTask();
             }
         } catch (\Exception $e) {
             // Ignore if table doesn't exist yet
@@ -43,7 +43,7 @@ class EventServiceProvider extends ServiceProvider
         Event::listen(Authenticated::class, function ($event) {
             try {
                 if (\Schema::hasColumn('tasks', 'is_permanent_referral')) {
-                    EarnDeskService::ensurePermanentReferralTask();
+                    SwiftKudiService::ensurePermanentReferralTask();
                 }
             } catch (\Exception $e) {
                 // Ignore if table doesn't exist yet

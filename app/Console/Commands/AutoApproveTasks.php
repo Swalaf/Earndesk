@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\TaskCompletion;
 use App\Models\SystemSetting;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use Illuminate\Support\Facades\Log;
 
 class AutoApproveTasks extends Command
@@ -15,7 +15,7 @@ class AutoApproveTasks extends Command
 
     protected $earnDeskService;
 
-    public function __construct(EarnDeskService $earnDeskService)
+    public function __construct(SwiftKudiService $earnDeskService)
     {
         parent::__construct();
         $this->earnDeskService = $earnDeskService;

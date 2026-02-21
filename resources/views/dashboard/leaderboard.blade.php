@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Leaderboard - EarnDesk')
+@section('title', 'Leaderboard - SwiftKudi')
 
 @section('content')
 <div class="py-6">
@@ -8,7 +8,7 @@
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-2xl font-bold text-gray-900">Leaderboard</h1>
-            <p class="text-gray-600 mt-1">See the top performers on EarnDesk</p>
+            <p class="text-gray-600 mt-1">See the top performers on SwiftKudi</p>
         </div>
 
         <!-- Tabs -->

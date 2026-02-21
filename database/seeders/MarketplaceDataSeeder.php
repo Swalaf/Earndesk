@@ -43,7 +43,7 @@ class MarketplaceDataSeeder extends Seeder
         $providers = [
             [
                 'name' => 'Chioma Design Studio',
-                'email' => 'chioma@earndesk.com',
+                'email' => 'chioma@swiftkudi.com',
                 'bio' => 'Professional graphic designer with 5+ years experience. Specializing in brand identity, social media graphics, and UI/UX design.',
                 'skills' => ['Graphic Design', 'Logo Design', 'Brand Identity', 'UI/UX', 'Adobe Photoshop', 'Figma'],
                 'hourly_rate' => 5000,
@@ -55,7 +55,7 @@ class MarketplaceDataSeeder extends Seeder
             ],
             [
                 'name' => 'TechPro Developers',
-                'email' => 'techpro@earndesk.com',
+                'email' => 'techpro@swiftkudi.com',
                 'bio' => 'Full-stack development team specializing in web applications, mobile apps, and e-commerce solutions. Fast delivery and clean code.',
                 'skills' => ['Web Development', 'Mobile Apps', 'Laravel', 'React', 'Node.js', 'WordPress'],
                 'hourly_rate' => 8000,
@@ -67,7 +67,7 @@ class MarketplaceDataSeeder extends Seeder
             ],
             [
                 'name' => 'Content Kings NG',
-                'email' => 'contentkings@earndesk.com',
+                'email' => 'contentkings@swiftkudi.com',
                 'bio' => 'Professional content writers and copywriters. We create engaging blog posts, website copy, product descriptions, and SEO content.',
                 'skills' => ['Content Writing', 'Copywriting', 'SEO Writing', 'Blog Posts', 'Technical Writing'],
                 'hourly_rate' => 3000,
@@ -79,7 +79,7 @@ class MarketplaceDataSeeder extends Seeder
             ],
             [
                 'name' => 'Video Magic Studios',
-                'email' => 'videomagic@earndesk.com',
+                'email' => 'videomagic@swiftkudi.com',
                 'bio' => 'Professional video editing and motion graphics. We bring your vision to life with stunning visual effects and seamless editing.',
                 'skills' => ['Video Editing', 'Motion Graphics', 'After Effects', 'Premiere Pro', 'Color Grading'],
                 'hourly_rate' => 7500,
@@ -91,7 +91,7 @@ class MarketplaceDataSeeder extends Seeder
             ],
             [
                 'name' => 'Social Media Gurus',
-                'email' => 'socialgurus@earndesk.com',
+                'email' => 'socialgurus@swiftkudi.com',
                 'bio' => 'Social media management and marketing experts. We help businesses grow their online presence and engage with their audience.',
                 'skills' => ['Social Media Management', 'Facebook Ads', 'Instagram Marketing', 'TikTok', 'Content Strategy'],
                 'hourly_rate' => 4000,
@@ -152,7 +152,7 @@ class MarketplaceDataSeeder extends Seeder
         $services = [
             // Graphic Design Services
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'graphic-design',
                 'title' => 'Professional Logo Design',
                 'description' => 'Get a unique, professional logo for your brand. Includes 3 initial concepts, unlimited revisions, and all file formats (AI, PNG, JPG, PDF). Delivery in 3-5 business days.',
@@ -163,7 +163,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'graphic-design',
                 'title' => 'Social Media Graphics Pack',
                 'description' => 'Complete social media graphics package including profile picture, cover photo, and 10 post templates. Perfect for Instagram, Facebook, and Twitter.',
@@ -174,7 +174,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => false,
             ],
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'graphic-design',
                 'title' => 'Business Card Design',
                 'description' => 'Professional business card design that makes a lasting impression. Double-sided design with print-ready files.',
@@ -187,7 +187,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Web Development Services
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'web-development',
                 'title' => 'Landing Page Development',
                 'description' => 'High-converting landing page built with modern technologies. Responsive design, SEO optimized, and fast loading. Perfect for product launches and lead generation.',
@@ -198,7 +198,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'web-development',
                 'title' => 'E-commerce Website Setup',
                 'description' => 'Complete e-commerce website with product catalog, shopping cart, payment integration, and admin dashboard. Ready to start selling!',
@@ -209,7 +209,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'web-development',
                 'title' => 'WordPress Website Design',
                 'description' => 'Professional WordPress website with custom theme, essential plugins, and basic SEO setup. Perfect for blogs, portfolios, and small businesses.',
@@ -222,7 +222,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Content Writing Services
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'content-writing',
                 'title' => 'SEO Blog Post Writing',
                 'description' => 'Engaging, SEO-optimized blog posts that drive traffic and convert readers. Includes keyword research, internal linking, and meta descriptions.',
@@ -233,7 +233,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => false,
             ],
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'content-writing',
                 'title' => 'Website Copywriting Package',
                 'description' => 'Complete website copy for your business. Includes homepage, about page, services page, and contact page. Compelling copy that converts.',
@@ -244,7 +244,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'content-writing',
                 'title' => 'Product Description Writing',
                 'description' => 'Compelling product descriptions that sell. Perfect for e-commerce stores. Each description is unique, SEO-friendly, and highlights key benefits.',
@@ -257,7 +257,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Video Editing Services
             [
-                'seller_email' => 'videomagic@earndesk.com',
+                'seller_email' => 'videomagic@swiftkudi.com',
                 'category_slug' => 'video-editing',
                 'title' => 'YouTube Video Editing',
                 'description' => 'Professional YouTube video editing with transitions, effects, color grading, and sound design. Turn your raw footage into engaging content.',
@@ -268,7 +268,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'videomagic@earndesk.com',
+                'seller_email' => 'videomagic@swiftkudi.com',
                 'category_slug' => 'video-editing',
                 'title' => 'Social Media Video Ads',
                 'description' => 'Eye-catching video ads for Instagram, TikTok, and Facebook. Short-form content optimized for maximum engagement and conversions.',
@@ -281,7 +281,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Digital Marketing Services
             [
-                'seller_email' => 'socialgurus@earndesk.com',
+                'seller_email' => 'socialgurus@swiftkudi.com',
                 'category_slug' => 'digital-marketing',
                 'title' => 'Social Media Management',
                 'description' => 'Complete social media management for your business. We create content, schedule posts, engage with followers, and grow your audience.',
@@ -292,7 +292,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'socialgurus@earndesk.com',
+                'seller_email' => 'socialgurus@swiftkudi.com',
                 'category_slug' => 'digital-marketing',
                 'title' => 'Facebook/Instagram Ads Setup',
                 'description' => 'Professional Facebook and Instagram advertising campaign setup. Target the right audience and maximize your ROI.',
@@ -305,7 +305,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Pending services for admin approval testing
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'graphic-design',
                 'title' => 'Brand Identity Package',
                 'description' => 'Complete brand identity including logo, color palette, typography, and brand guidelines. Everything you need for a consistent brand image.',
@@ -316,7 +316,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => false,
             ],
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'web-development',
                 'title' => 'Mobile App Development',
                 'description' => 'Custom mobile app development for iOS and Android. From concept to deployment, we build apps that users love.',
@@ -364,7 +364,7 @@ class MarketplaceDataSeeder extends Seeder
         $listings = [
             // Backlinks
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'growth-backlinks',
                 'title' => 'High DA Backlink - Tech Blog (DA 50+)',
                 'description' => 'Get a high-quality dofollow backlink from our established tech blog with Domain Authority 50+. Perfect for boosting your SEO rankings.',
@@ -375,7 +375,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'growth-backlinks',
                 'title' => 'Guest Post on Finance Blog (DA 40+)',
                 'description' => 'Publish your guest post on our finance blog. Includes 2 dofollow links and social media promotion. Great for finance, crypto, and business niches.',
@@ -388,7 +388,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Influencers
             [
-                'seller_email' => 'socialgurus@earndesk.com',
+                'seller_email' => 'socialgurus@swiftkudi.com',
                 'category_slug' => 'growth-influencer-promotions',
                 'title' => 'Instagram Influencer Shoutout - 100K Followers',
                 'description' => 'Get a shoutout on our Instagram page with 100K+ engaged followers in the lifestyle and fashion niche. Great for brand awareness.',
@@ -399,7 +399,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'videomagic@earndesk.com',
+                'seller_email' => 'videomagic@swiftkudi.com',
                 'category_slug' => 'growth-influencer-promotions',
                 'title' => 'TikTok Video Promotion - 500K Followers',
                 'description' => 'Get your product or service featured in a TikTok video on our channel with 500K+ followers. High engagement and viral potential.',
@@ -410,7 +410,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'growth-influencer-promotions',
                 'title' => 'YouTube Channel Collaboration - 50K Subs',
                 'description' => 'Collaborate with our YouTube channel focused on tech reviews and tutorials. Perfect for software, apps, and tech products.',
@@ -421,7 +421,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'growth-influencer-promotions',
                 'title' => 'Twitter/X Thread Promotion - 80K Followers',
                 'description' => 'Get your product featured in a viral Twitter thread. We create engaging content that drives traffic and conversions.',
@@ -434,7 +434,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Newsletters
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'growth-newsletter-promotions',
                 'title' => 'Newsletter Sponsorship - 25K Subscribers',
                 'description' => 'Sponsor our weekly tech newsletter with 25K engaged subscribers. Includes banner ad and dedicated section about your product.',
@@ -445,7 +445,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'growth-newsletter-promotions',
                 'title' => 'Developer Newsletter Ad - 40K Subscribers',
                 'description' => 'Reach 40K+ developers with your tool, service, or product. Our newsletter covers web development, DevOps, and programming tutorials.',
@@ -456,7 +456,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'socialgurus@earndesk.com',
+                'seller_email' => 'socialgurus@swiftkudi.com',
                 'category_slug' => 'growth-newsletter-promotions',
                 'title' => 'Marketing Newsletter - 15K Marketers',
                 'description' => 'Promote your marketing tool or service to 15K+ marketing professionals. High-quality audience of decision makers.',
@@ -469,7 +469,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Leads
             [
-                'seller_email' => 'socialgurus@earndesk.com',
+                'seller_email' => 'socialgurus@swiftkudi.com',
                 'category_slug' => 'growth-lead-generation',
                 'title' => '100 Verified Business Leads - Lagos SMEs',
                 'description' => 'Get 100 verified leads of small and medium business owners in Lagos. Includes company name, contact person, email, phone, and industry.',
@@ -480,7 +480,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'growth-lead-generation',
                 'title' => '50 Startup Founder Leads - Tech Industry',
                 'description' => 'Connect with 50 startup founders in the tech industry. Verified email addresses and LinkedIn profiles included.',
@@ -491,7 +491,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'contentkings@earndesk.com',
+                'seller_email' => 'contentkings@swiftkudi.com',
                 'category_slug' => 'growth-lead-generation',
                 'title' => '200 E-commerce Customer Leads - Fashion',
                 'description' => '200 verified leads of fashion-conscious consumers who have made online purchases in the last 6 months. Perfect for fashion brands.',
@@ -502,7 +502,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'growth-lead-generation',
                 'title' => 'Real Estate Investor Leads - 75 Contacts',
                 'description' => '75 verified real estate investors looking for properties in Lagos and Abuja. Includes phone, email, and investment budget range.',
@@ -515,7 +515,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // More Backlinks
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'growth-backlinks',
                 'title' => 'Fashion Blog Backlink - DA 35+',
                 'description' => 'Get a contextual backlink from our fashion and lifestyle blog. Great for fashion, beauty, and lifestyle brands.',
@@ -526,7 +526,7 @@ class MarketplaceDataSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'seller_email' => 'videomagic@earndesk.com',
+                'seller_email' => 'videomagic@swiftkudi.com',
                 'category_slug' => 'growth-backlinks',
                 'title' => 'Entertainment Blog Backlink - DA 45+',
                 'description' => 'Premium backlink from our entertainment and pop culture blog. High traffic and engagement.',
@@ -573,7 +573,7 @@ class MarketplaceDataSeeder extends Seeder
         $products = [
             // Templates
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'digital-templates',
                 'title' => 'Social Media Templates Bundle - 50+ Designs',
                 'description' => 'Complete bundle of 50+ social media templates for Instagram, Facebook, and Twitter. Fully editable in Canva. Perfect for businesses and influencers.',
@@ -585,7 +585,7 @@ class MarketplaceDataSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'seller_email' => 'chioma@earndesk.com',
+                'seller_email' => 'chioma@swiftkudi.com',
                 'category_slug' => 'digital-templates',
                 'title' => 'Professional Resume Template Pack',
                 'description' => 'Set of 5 professional resume templates in Word and Pages format. Clean, modern designs that get you noticed by recruiters.',
@@ -599,7 +599,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // SaaS Applications
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-saas-applications',
                 'title' => 'SaaS Starter Kit - Laravel + Vue',
                 'description' => 'Complete SaaS starter kit with authentication, billing, teams, and admin panel. Built with Laravel and Vue.js. Save months of development time.',
@@ -613,7 +613,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Web Applications
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-web-applications',
                 'title' => 'Project Management App - Full Source',
                 'description' => 'Complete project management application with tasks, teams, time tracking, and reports. Built with Laravel. Full source code included.',
@@ -627,7 +627,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Scripts & Plugins
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-scripts-plugins',
                 'title' => 'WordPress SEO Plugin Pro',
                 'description' => 'Advanced SEO plugin for WordPress. Auto-generate meta tags, sitemaps, schema markup, and more. Boost your search rankings effortlessly.',
@@ -641,7 +641,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // AI Tools
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-ai-tools',
                 'title' => 'AI Content Generator Script',
                 'description' => 'AI-powered content generation script using OpenAI API. Generate blog posts, product descriptions, and social media content automatically.',
@@ -655,7 +655,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Bots & Automation
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-bots-automation',
                 'title' => 'Telegram Bot Framework',
                 'description' => 'Complete Telegram bot framework with commands, payments, and admin panel. Easy to customize for any use case.',
@@ -669,7 +669,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // E-commerce Projects
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-e-commerce-projects',
                 'title' => 'Multi-Vendor Marketplace Script',
                 'description' => 'Complete multi-vendor marketplace like Amazon or eBay. Vendor dashboard, admin panel, payment integration, and more.',
@@ -683,7 +683,7 @@ class MarketplaceDataSeeder extends Seeder
             
             // Fintech Projects
             [
-                'seller_email' => 'techpro@earndesk.com',
+                'seller_email' => 'techpro@swiftkudi.com',
                 'category_slug' => 'digital-fintech-projects',
                 'title' => 'Digital Wallet & Payment System',
                 'description' => 'Complete digital wallet system with transfers, bill payments, and QR codes. Built with Laravel. Perfect for fintech startups.',

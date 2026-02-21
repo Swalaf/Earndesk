@@ -28,7 +28,7 @@ class TaskCreationService
     private $taskRepository;
 
     /**
-     * @var EarnDeskService
+     * @var SwiftKudiService
      */
     private $earnDeskService;
 
@@ -36,11 +36,11 @@ class TaskCreationService
      * Create a new service instance.
      *
      * @param TaskRepository $taskRepository
-     * @param EarnDeskService $earnDeskService
+     * @param SwiftKudiService $earnDeskService
      */
     public function __construct(
         TaskRepository $taskRepository,
-        EarnDeskService $earnDeskService
+        SwiftKudiService $earnDeskService
     ) {
         $this->taskRepository = $taskRepository;
         $this->earnDeskService = $earnDeskService;
@@ -400,8 +400,8 @@ class TaskCreationService
     protected function checkRateLimit(int $userId): bool
     {
         // Get rate limit from settings or use default
-        $maxTasksPerDay = config('earndesk.rate_limits.tasks_per_day', 50);
-        $maxTasksPerHour = config('earndesk.rate_limits.tasks_per_hour', 10);
+        $maxTasksPerDay = config('swiftkudi.rate_limits.tasks_per_day', 50);
+        $maxTasksPerHour = config('swiftkudi.rate_limits.tasks_per_hour', 10);
 
         $todayCount = $this->taskRepository->getUserTodayTaskCount($userId);
 

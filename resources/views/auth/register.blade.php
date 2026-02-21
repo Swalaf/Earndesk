@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <x-slot name="title">Register - EarnDesk</x-slot>
+    <x-slot name="title">Register - SwiftKudi</x-slot>
 
     <!-- Google One Tap -->
     @if(config('services.google.enabled'))

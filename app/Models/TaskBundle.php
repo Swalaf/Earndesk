@@ -362,7 +362,7 @@ class TaskBundle extends Model
         return self::create([
             'user_id' => null, // Platform bundle
             'name' => $name,
-            'description' => 'EarnDesk exclusive task bundle - complete multiple tasks for bigger rewards!',
+            'description' => 'SwiftKudi exclusive task bundle - complete multiple tasks for bigger rewards!',
             'total_price' => $totalPrice,
             'worker_reward' => $workerReward,
             'platform_commission' => $commission,

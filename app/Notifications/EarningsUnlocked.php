@@ -36,7 +36,7 @@ class EarningsUnlocked extends Notification
         return (new MailMessage)
             ->subject('🎉 Your Earning Access Has Been Unlocked!')
             ->greeting("Congratulations, {$notifiable->name}!")
-            ->line('Great news! You can now start completing tasks and earning money on EarnDesk.')
+            ->line('Great news! You can now start completing tasks and earning money on SwiftKudi.')
             ->line('Your first campaign has been successfully created, unlocking your earning potential.')
             ->action('Start Earning', route('tasks.index'))
             ->line('Remember: The more quality tasks you create, the more visibility and earnings you unlock!');

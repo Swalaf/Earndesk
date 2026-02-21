@@ -8,7 +8,7 @@ use App\Models\Withdrawal;
 use App\Models\WalletLedger;
 use App\Models\User;
 use App\Models\Referral;
-use App\Services\EarnDeskService;
+use App\Services\SwiftKudiService;
 use App\Services\RevenueAggregator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +19,7 @@ class WalletController extends Controller
 {
     protected $earnDeskService;
 
-    public function __construct(EarnDeskService $earnDeskService)
+    public function __construct(SwiftKudiService $earnDeskService)
     {
         $this->earnDeskService = $earnDeskService;
     }

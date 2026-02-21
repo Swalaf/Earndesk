@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $task->title . ' - EarnDesk')
+@section('title', $task->title . ' - SwiftKudi')
 
 @section('content')
 <div class="py-6">

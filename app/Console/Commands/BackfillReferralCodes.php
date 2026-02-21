@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class BackfillReferralCodes extends Command
 {
-    protected $signature = 'earndesk:backfill-referral-codes {--batch=100} {--dry-run}';
+    protected $signature = 'swiftkudi:backfill-referral-codes {--batch=100} {--dry-run}';
     protected $description = 'Generate referral_code for existing users that are missing one. Use --dry-run to preview changes.';
 
     public function handle()

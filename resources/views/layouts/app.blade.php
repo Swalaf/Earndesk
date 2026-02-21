@@ -578,7 +578,7 @@
                         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
                             <i class="fas fa-coins text-white text-lg"></i>
                         </div>
-                        <span class="font-bold text-xl text-white">EarnDesk</span>
+                        <span class="font-bold text-xl text-white">SwiftKudi</span>
                     </a>
                     <button onclick="closeMobileMenu()" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800">
                         <i class="fas fa-times text-xl"></i>
@@ -639,7 +639,7 @@
                             <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all">
                                 <i class="fas fa-coins text-white text-lg"></i>
                             </div>
-                            <span class="font-bold text-xl bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">EarnDesk</span>
+                            <span class="font-bold text-xl bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">SwiftKudi</span>
                         </a>
                     </div>
 
@@ -775,9 +775,9 @@
                         <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-2">
                             <i class="fas fa-coins text-white text-sm"></i>
                         </div>
-                        <span class="font-bold text-white">EarnDesk</span>
+                        <span class="font-bold text-white">SwiftKudi</span>
                     </div>
-                    <p class="text-sm text-gray-500">© {{ date('Y') }} EarnDesk. All rights reserved.</p>
+                    <p class="text-sm text-gray-500">© {{ date('Y') }} SwiftKudi. All rights reserved.</p>
                 </div>
             </div>
         </footer>
