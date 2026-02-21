@@ -145,6 +145,43 @@
                             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Minimum withdrawal: ₦1,000</p>
                         </div>
 
+                        <!-- Withdrawal Method -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                                Withdrawal Method
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="method" value="bank" class="peer sr-only" checked>
+                                    <div class="p-4 bg-gray-50 dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-600 rounded-xl peer-checked:border-indigo-500 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-500/10 transition-all">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center">
+                                                <i class="fas fa-building text-indigo-600 dark:text-indigo-400"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-gray-100">Bank Transfer</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">1-2 business days</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="method" value="usdt" class="peer sr-only">
+                                    <div class="p-4 bg-gray-50 dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-600 rounded-xl peer-checked:border-indigo-500 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-500/10 transition-all">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                                                <i class="fas fa-coins text-green-600 dark:text-green-400"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-gray-100">USDT</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Instant</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- Quick Amounts -->
                         <div class="grid grid-cols-4 gap-3 mb-6">
                             @foreach([1000, 2000, 5000, 10000] as $amount)

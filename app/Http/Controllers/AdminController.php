@@ -735,11 +735,18 @@ class AdminController extends Controller
         ]);
 
         // Notify the seller
-        $service->seller->notify(new \App\Notifications\CustomNotification(
-            'Service Approved',
-            "Your service '{$service->title}' has been approved and is now live!",
-            'service_approval'
-        ));
+        if ($service->seller) {
+            try {
+                $service->seller->notify(new \App\Notifications\CustomNotification(
+                    'Service Approved',
+                    "Your service '{$service->title}' has been approved and is now live!",
+                    'service_approval'
+                ));
+            } catch (\Exception $e) {
+                // Log notification error but don't fail
+                \Log::error('Failed to send service approval notification: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->back()
             ->with('success', 'Service approved successfully.');
@@ -765,11 +772,18 @@ class AdminController extends Controller
         ]);
 
         // Notify the seller
-        $service->seller->notify(new \App\Notifications\CustomNotification(
-            'Service Rejected',
-            "Your service '{$service->title}' was not approved. Reason: {$request->rejection_reason}",
-            'service_rejection'
-        ));
+        if ($service->seller) {
+            try {
+                $service->seller->notify(new \App\Notifications\CustomNotification(
+                    'Service Rejected',
+                    "Your service '{$service->title}' was not approved. Reason: {$request->rejection_reason}",
+                    'service_rejection'
+                ));
+            } catch (\Exception $e) {
+                // Log notification error but don't fail
+                \Log::error('Failed to send service rejection notification: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->back()
             ->with('success', 'Service rejected.');
@@ -832,11 +846,16 @@ class AdminController extends Controller
 
         // Notify the seller
         if ($listing->seller) {
-            $listing->seller->notify(new \App\Notifications\CustomNotification(
-                'Listing Approved',
-                "Your growth listing '{$listing->title}' has been approved and is now live!",
-                'listing_approval'
-            ));
+            try {
+                $listing->seller->notify(new \App\Notifications\CustomNotification(
+                    'Listing Approved',
+                    "Your growth listing '{$listing->title}' has been approved and is now live!",
+                    'listing_approval'
+                ));
+            } catch (\Exception $e) {
+                // Log notification error but don't fail
+                \Log::error('Failed to send listing approval notification: ' . $e->getMessage());
+            }
         }
 
         return redirect()->back()
@@ -864,11 +883,16 @@ class AdminController extends Controller
 
         // Notify the seller
         if ($listing->seller) {
-            $listing->seller->notify(new \App\Notifications\CustomNotification(
-                'Listing Rejected',
-                "Your growth listing '{$listing->title}' was not approved. Reason: {$request->rejection_reason}",
-                'listing_rejection'
-            ));
+            try {
+                $listing->seller->notify(new \App\Notifications\CustomNotification(
+                    'Listing Rejected',
+                    "Your growth listing '{$listing->title}' was not approved. Reason: {$request->rejection_reason}",
+                    'listing_rejection'
+                ));
+            } catch (\Exception $e) {
+                // Log notification error but don't fail
+                \Log::error('Failed to send listing rejection notification: ' . $e->getMessage());
+            }
         }
 
         return redirect()->back()
@@ -882,19 +906,23 @@ class AdminController extends Controller
     {
         $status = $request->get('status', 'pending');
 
-        $query = \App\Models\DigitalProduct::with(['seller', 'category']);
+        $query = \App\Models\DigitalProduct::with(['user', 'category']);
 
-        if ($status && $status !== 'all') {
-            $query->where('status', $status);
+        // DigitalProduct uses is_active boolean, not status string
+        // pending = not active (is_active = false), active = is_active = true
+        if ($status === 'pending') {
+            $query->where('is_active', false);
+        } elseif ($status === 'active') {
+            $query->where('is_active', true);
         }
 
         $products = $query->orderBy('created_at', 'desc')->paginate(15);
 
         $stats = [
             'total' => \App\Models\DigitalProduct::count(),
-            'pending' => \App\Models\DigitalProduct::where('status', 'pending')->count(),
-            'active' => \App\Models\DigitalProduct::where('status', 'active')->count(),
-            'rejected' => \App\Models\DigitalProduct::where('status', 'rejected')->count(),
+            'pending' => \App\Models\DigitalProduct::where('is_active', false)->count(),
+            'active' => \App\Models\DigitalProduct::where('is_active', true)->count(),
+            'rejected' => 0, // DigitalProduct doesn't have rejected status
         ];
 
         return view('admin.digital-products', compact('products', 'stats'));
@@ -905,7 +933,7 @@ class AdminController extends Controller
      */
     public function digitalProductDetails(\App\Models\DigitalProduct $product)
     {
-        $product->load(['seller', 'category', 'orders']);
+        $product->load(['user', 'category', 'orders']);
 
         return view('admin.digital-product-details', compact('product'));
     }
@@ -915,23 +943,27 @@ class AdminController extends Controller
      */
     public function approveDigitalProduct(\App\Models\DigitalProduct $product)
     {
-        if ($product->status !== 'pending') {
+        if ($product->is_active) {
             return redirect()->back()
-                ->with('error', 'Only pending products can be approved.');
+                ->with('error', 'Product is already active.');
         }
 
         $product->update([
-            'status' => 'active',
-            'rejection_reason' => null,
+            'is_active' => true,
         ]);
 
         // Notify the seller
-        if ($product->seller) {
-            $product->seller->notify(new \App\Notifications\CustomNotification(
-                'Product Approved',
-                "Your digital product '{$product->name}' has been approved and is now live!",
-                'product_approval'
-            ));
+        if ($product->user) {
+            try {
+                $product->user->notify(new \App\Notifications\CustomNotification(
+                    'Product Approved',
+                    "Your digital product '{$product->title}' has been approved and is now live!",
+                    'product_approval'
+                ));
+            } catch (\Exception $e) {
+                // Log notification error but don't fail
+                \Log::error('Failed to send product approval notification: ' . $e->getMessage());
+            }
         }
 
         return redirect()->back()
@@ -947,26 +979,30 @@ class AdminController extends Controller
             'rejection_reason' => 'required|string|max:1000',
         ]);
 
-        if ($product->status !== 'pending') {
+        if ($product->is_active) {
             return redirect()->back()
-                ->with('error', 'Only pending products can be rejected.');
+                ->with('error', 'Cannot reject an active product.');
         }
 
-        $product->update([
-            'status' => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
-        ]);
+        // For rejection, we just delete the product or keep it inactive
+        // You could add a rejection_reason column if needed
+        // For now, we'll just keep it inactive
 
         // Notify the seller
-        if ($product->seller) {
-            $product->seller->notify(new \App\Notifications\CustomNotification(
-                'Product Rejected',
-                "Your digital product '{$product->name}' was not approved. Reason: {$request->rejection_reason}",
-                'product_rejection'
-            ));
+        if ($product->user) {
+            try {
+                $product->user->notify(new \App\Notifications\CustomNotification(
+                    'Product Rejected',
+                    "Your digital product '{$product->title}' was not approved. Reason: {$request->rejection_reason}",
+                    'product_rejection'
+                ));
+            } catch (\Exception $e) {
+                // Log notification error but don't fail
+                \Log::error('Failed to send product rejection notification: ' . $e->getMessage());
+            }
         }
 
-        return redirect()->back()
+        return redirect()->route('admin.digital-products')
             ->with('success', 'Product rejected.');
     }
 }

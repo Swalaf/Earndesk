@@ -11,7 +11,7 @@
                 <i class="fas fa-box mr-1"></i> Digital Products
             </a>
             <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
-            <span class="text-gray-900 dark:text-gray-100 font-medium truncate max-w-[200px]">{{ $product->name }}</span>
+            <span class="text-gray-900 dark:text-gray-100 font-medium truncate max-w-[200px]">{{ $product->title }}</span>
         </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -20,24 +20,21 @@
                 <!-- Product Info -->
                 <div class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg border border-gray-100 dark:border-dark-700 p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ $product->name }}</h2>
-                        @php
-                            $statusClasses = [
-                                'pending' => 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
-                                'active' => 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300',
-                                'rejected' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300',
-                                'paused' => 'bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300',
-                            ];
-                        @endphp
-                        <span class="px-3 py-1 text-sm rounded-full font-medium {{ $statusClasses[$product->status] ?? 'bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300' }}">
-                            {{ ucfirst($product->status) }}
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ $product->title }}</h2>
+                        <span class="px-3 py-1 text-sm rounded-full font-medium
+                            @if($product->is_active)
+                                bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300
+                            @else
+                                bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300
+                            @endif">
+                            {{ $product->is_active ? 'Active' : 'Pending' }}
                         </span>
                     </div>
 
                     <!-- Product Image -->
-                    @if($product->image)
+                    @if($product->thumbnail)
                         <div class="mb-6">
-                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover rounded-xl">
+                            <img src="{{ Storage::url($product->thumbnail) }}" alt="{{ $product->title }}" class="w-full h-48 object-cover rounded-xl">
                         </div>
                     @endif
 
@@ -56,7 +53,7 @@
                         </div>
                         <div class="p-4 bg-gray-50 dark:bg-dark-800 rounded-xl">
                             <div class="text-sm text-gray-500 dark:text-gray-400">Sales</div>
-                            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $product->sales_count ?? $product->orders()->count() }}</div>
+                            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $product->total_sales ?? $product->orders()->count() }}</div>
                         </div>
                     </div>
 
@@ -91,13 +88,6 @@
                             </div>
                         </div>
                     @endif
-
-                    @if($product->status === 'rejected' && $product->rejection_reason)
-                        <div class="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl">
-                            <h4 class="font-medium text-red-800 dark:text-red-300 mb-1">Rejection Reason</h4>
-                            <p class="text-red-600 dark:text-red-400">{{ $product->rejection_reason }}</p>
-                        </div>
-                    @endif
                 </div>
             </div>
 
@@ -106,20 +96,20 @@
                 <!-- Seller Info -->
                 <div class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg border border-gray-100 dark:border-dark-700 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Seller Information</h3>
-                    @if($product->seller)
+                    @if($product->user)
                         <div class="flex items-center gap-3 mb-4">
                             <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                                {{ strtoupper(substr($product->seller->name ?? 'U', 0, 1)) }}
+                                {{ strtoupper(substr($product->user->name ?? 'U', 0, 1)) }}
                             </div>
                             <div>
-                                <div class="font-medium text-gray-900 dark:text-gray-100">{{ $product->seller->name }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $product->seller->email }}</div>
+                                <div class="font-medium text-gray-900 dark:text-gray-100">{{ $product->user->name }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $product->user->email }}</div>
                             </div>
                         </div>
                         <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                            Member since {{ $product->seller->created_at->format('M d, Y') }}
+                            Member since {{ $product->user->created_at->format('M d, Y') }}
                         </div>
-                        <a href="{{ route('admin.user-details', $product->seller) }}" 
+                        <a href="{{ route('admin.user-details', $product->user) }}" 
                            class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-dark-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-dark-700 transition-colors text-sm">
                             <i class="fas fa-user mr-2"></i>View Profile
                         </a>
@@ -144,17 +134,15 @@
                             <span class="text-gray-500 dark:text-gray-400">Featured</span>
                             <span class="text-gray-900 dark:text-gray-100">{{ $product->is_featured ? 'Yes' : 'No' }}</span>
                         </div>
-                        @if($product->download_limit)
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-gray-400">Download Limit</span>
-                                <span class="text-gray-900 dark:text-gray-100">{{ $product->download_limit }}</span>
-                            </div>
-                        @endif
+                        <div class="flex justify-between">
+                            <span class="text-gray-500 dark:text-gray-400">Downloads</span>
+                            <span class="text-gray-900 dark:text-gray-100">{{ $product->downloads ?? 0 }}</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Actions -->
-                @if($product->status === 'pending')
+                @if(!$product->is_active)
                     <div class="bg-white dark:bg-dark-900 rounded-2xl shadow-lg border border-gray-100 dark:border-dark-700 p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Actions</h3>
                         <form action="{{ route('admin.digital-products.approve', $product) }}" method="POST" class="mb-3">

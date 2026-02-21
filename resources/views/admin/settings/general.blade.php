@@ -301,8 +301,13 @@
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:text-white"
                             placeholder="20" min="1" step="1">
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Number of activated referrals needed to earn the bonus</p>
+                        @php
+                            $bonusAmount = old('referral_bonus_amount', $settingsByKey['referral_bonus_amount'] ?? 500);
+                            $bonusTarget = old('referral_bonus_target', $settingsByKey['referral_bonus_target'] ?? 20);
+                            $totalBonus = $bonusAmount * $bonusTarget;
+                        @endphp
                         <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">
-                            Total Bonus: ₦{{ number_format((old('referral_bonus_amount', $settingsByKey['referral_bonus_amount'] ?? 500) * (old('referral_bonus_target', $settingsByKey['referral_bonus_target'] ?? 20))) }}
+                            Total Bonus: ₦{{ number_format($totalBonus) }}
                         </p>
                     </div>
                 </div>

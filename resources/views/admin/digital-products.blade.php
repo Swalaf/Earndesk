@@ -104,15 +104,15 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
-                                            @if($product->image)
-                                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-10 h-10 rounded-lg object-cover">
+                                            @if($product->thumbnail)
+                                                <img src="{{ Storage::url($product->thumbnail) }}" alt="{{ $product->title }}" class="w-10 h-10 rounded-lg object-cover">
                                             @else
                                                 <div class="w-10 h-10 bg-gray-100 dark:bg-dark-800 rounded-lg flex items-center justify-center">
                                                     <i class="fas fa-file text-gray-400"></i>
                                                 </div>
                                             @endif
                                             <div>
-                                                <div class="font-medium text-gray-900 dark:text-gray-100">{{ $product->name }}</div>
+                                                <div class="font-medium text-gray-900 dark:text-gray-100">{{ $product->title }}</div>
                                                 <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{{ Str::limit($product->description, 50) }}</div>
                                             </div>
                                         </div>
@@ -123,21 +123,20 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ $product->seller->name ?? 'Unknown' }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $product->seller->email ?? 'N/A' }}</div>
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ $product->user->name ?? 'Unknown' }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $product->user->email ?? 'N/A' }}</div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="font-semibold text-green-600 dark:text-green-400">₦{{ number_format($product->price, 2) }}</span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="px-3 py-1 text-xs rounded-full font-medium
-                                            @switch($product->status)
-                                                @case('pending') bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 @break
-                                                @case('active') bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 @break
-                                                @case('rejected') bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 @break
-                                                @default bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 @break
-                                            @endswitch">
-                                            {{ ucfirst($product->status) }}
+                                            @if($product->is_active)
+                                                bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300
+                                            @else
+                                                bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300
+                                            @endif">
+                                            {{ $product->is_active ? 'Active' : 'Pending' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">

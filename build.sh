@@ -21,7 +21,7 @@ composer install --no-dev --optimize-autoloader --no-interaction
 # Install Node dependencies and build assets
 echo "📦 Building frontend assets..."
 npm install
-npm run build
+npm run production
 
 # Optimize for production
 echo "⚡ Optimizing for production..."
