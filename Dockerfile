@@ -65,12 +65,20 @@ RUN printf '#!/bin/bash\n\
     echo "Setting permissions..."\n\
     chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
+    echo "Generating APP_KEY if not set..."\n\
+    if [ -z "$APP_KEY" ]; then\n\
+    export APP_KEY=$(php artisan key:generate --show)\n\
+    echo "APP_KEY generated"\n\
+    fi\n\
     echo "Caching configuration..."\n\
+    php artisan config:clear\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
     echo "Running migrations..."\n\
     php artisan migrate --force || echo "Migration skipped"\n\
+    echo "Running database seeder..."\n\
+    php artisan db:seed --force || echo "Seeder skipped"\n\
     echo "Starting Apache..."\n\
     exec apache2-foreground\n' > /start.sh && chmod +x /start.sh
 
