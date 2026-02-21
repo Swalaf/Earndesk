@@ -904,6 +904,15 @@ class AdminController extends Controller
      */
     public function digitalProducts(Request $request)
     {
+        // Check if digital_products table exists
+        if (!\Illuminate\Support\Facades\Schema::hasTable('digital_products')) {
+            return view('admin.digital-products', [
+                'products' => collect(),
+                'stats' => ['total' => 0, 'pending' => 0, 'active' => 0, 'rejected' => 0],
+                'message' => 'Digital products table does not exist. Please run migrations.'
+            ]);
+        }
+
         $status = $request->get('status', 'pending');
 
         $query = \App\Models\DigitalProduct::with(['user', 'category']);
