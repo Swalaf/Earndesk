@@ -20,8 +20,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
+# Install PHP extensions including PostgreSQL
 RUN docker-php-ext-install pdo_pgsql pgsql zip mbstring exif pcntl bcmath gd
+
+# Enable the PDO PostgreSQL driver
+RUN docker-php-ext-enable pdo_pgsql pgsql
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -57,10 +60,13 @@ RUN echo '<VirtualHost *:80>\n\
 # Create startup script
 RUN echo '#!/bin/bash\n\
     set -e\n\
+    echo "Starting application..."\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
-    php artisan migrate --force\n\
+    echo "Running migrations..."\n\
+    php artisan migrate --force || echo "Migration failed, continuing..."\n\
+    echo "Starting Apache..."\n\
     apache2-foreground' > /start.sh && chmod +x /start.sh
 
 # Expose port 80
