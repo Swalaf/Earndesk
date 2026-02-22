@@ -39,25 +39,48 @@
                 </a>
             @endif
 
-            <!-- Page Numbers -->
-            @foreach($paginator->linkCollection() as $page => $url)
-                @if($page === '...')
+            <!-- Page Numbers - Use simple iteration -->
+            @php
+                $currentPage = $paginator->currentPage();
+                $lastPage = $paginator->lastPage();
+                $startPage = max(1, $currentPage - 2);
+                $endPage = min($lastPage, $currentPage + 2);
+            @endphp
+            
+            @if($startPage > 1)
+                <a href="{{ $paginator->url(1) }}"
+                   class="px-3 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-900 border border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-800 text-sm transition-colors">
+                    1
+                </a>
+                @if($startPage > 2)
                     <span class="px-3 py-1.5 text-gray-500 dark:text-gray-400">...</span>
-                @elseif(is_string($page))
-                    <!-- Skip non-numeric keys -->
-                @elseif($page == $paginator->currentPage())
+                @endif
+            @endif
+            
+            @for($page = $startPage; $page <= $endPage; $page++)
+                @if($page == $currentPage)
                     <span class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium"
                           aria-current="page">
                         {{ $page }}
                     </span>
                 @else
-                    <a href="{{ $url }}"
+                    <a href="{{ $paginator->url($page) }}"
                        class="px-3 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-900 border border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-800 text-sm transition-colors"
                        aria-label="Go to page {{ $page }}">
                         {{ $page }}
                     </a>
                 @endif
-            @endforeach
+            @endfor
+            
+            @if($endPage < $lastPage)
+                @if($endPage < $lastPage - 1)
+                    <span class="px-3 py-1.5 text-gray-500 dark:text-gray-400">...</span>
+                @endif
+                <a href="{{ $paginator->url($lastPage) }}"
+                   class="px-3 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-900 border border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-800 text-sm transition-colors">
+                    {{ $lastPage }}
+                </a>
+            @endif
 
             <!-- Next Page -->
             @if($paginator->hasMorePages())
