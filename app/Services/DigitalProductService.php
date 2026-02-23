@@ -81,6 +81,11 @@ class DigitalProductService
             $buyer = \App\Models\User::findOrFail($buyerId);
             $wallet = $buyer->wallet;
 
+            // Check if buyer has a wallet
+            if (!$wallet) {
+                throw new \Exception('Please activate your wallet first');
+            }
+
             $amount = $product->is_free ? 0 : $product->current_price;
             $platformFee = $amount > 0 ? ($amount * $this->platformFeePercent / 100) : 0;
             $sellerEarnings = $amount - $platformFee;
@@ -126,7 +131,9 @@ class DigitalProductService
 
                 // Add to seller wallet (escrow - will release when download completes)
                 $sellerWallet = $product->user->wallet;
-                $sellerWallet->increment('pending_balance', $sellerEarnings);
+                if ($sellerWallet) {
+                    $sellerWallet->increment('pending_balance', $sellerEarnings);
+                }
             }
 
             $order->save();

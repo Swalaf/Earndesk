@@ -202,10 +202,25 @@ class DigitalProductController extends Controller
             return redirect()->route('digital-products.my-purchases')
                 ->with('success', 'Purchase completed! You can now download your product.');
         } catch (\Exception $e) {
-            if ($e->getMessage() === 'Insufficient balance') {
+            $message = $e->getMessage();
+            
+            // Provide specific error messages
+            if (strpos($message, 'Insufficient balance') !== false) {
                 return back()->with('error', 'Insufficient wallet balance. Please fund your wallet to purchase this product.');
             }
-            return back()->with('error', 'An error occurred while processing your purchase. Please try again.');
+            
+            if (strpos($message, 'activate your wallet') !== false) {
+                return redirect()->route('wallet.activate')
+                    ->with('error', 'Please activate your wallet first to make purchases.');
+            }
+            
+            // Log the actual error for debugging
+            \Log::error('Digital product purchase error: ' . $message, [
+                'product_id' => $product->id,
+                'user_id' => Auth::id(),
+            ]);
+            
+            return back()->with('error', $message ?: 'An error occurred while processing your purchase. Please try again.');
         }
     }
 

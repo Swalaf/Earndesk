@@ -267,4 +267,62 @@ class GrowthController extends Controller
 
         return response()->json($result, $result['success'] ? 200 : 400);
     }
+
+    /**
+     * Contact a seller
+     */
+    public function contact(Request $request)
+    {
+        $validated = $request->validate([
+            'recipient_id' => 'required|exists:users,id',
+            'subject' => 'required|string|min:3|max:255',
+            'message' => 'required|string|min:10|max:5000',
+        ]);
+
+        $sender = Auth::user();
+        $recipientId = $validated['recipient_id'];
+
+        // Prevent sending message to yourself
+        if ($sender->id == $recipientId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot send a message to yourself.',
+            ], 400);
+        }
+
+        try {
+            $recipient = \App\Models\User::find($recipientId);
+            
+            if (!$recipient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recipient not found.',
+                ], 404);
+            }
+
+            // Use the Notification model's sendTo method
+            \App\Models\Notification::sendTo(
+                $recipient,
+                'New Message from ' . $sender->name,
+                "Subject: {$validated['subject']}\n\n{$validated['message']}",
+                'contact_message',
+                [
+                    'sender_id' => $sender->id,
+                    'sender_name' => $sender->name,
+                    'action_url' => route('growth.index'),
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Message sent successfully!',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Contact seller error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send message: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

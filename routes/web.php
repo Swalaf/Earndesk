@@ -365,6 +365,9 @@ Route::prefix('services')->name('professional-services.')->group(function () {
         // Provider profile
         Route::get('/profile/edit', [ProfessionalServiceController::class, 'editProfile'])->name('edit-profile');
         Route::put('/profile', [ProfessionalServiceController::class, 'updateProfile'])->name('update-profile');
+        
+        // Contact seller
+        Route::post('/contact', [ProfessionalServiceController::class, 'contact'])->name('contact');
     });
     
     // Single service view (public)
@@ -398,6 +401,9 @@ Route::prefix('growth')->name('growth.')->group(function () {
         // Sales (seller)
         Route::get('/sales', [GrowthController::class, 'mySales'])->name('sales.index');
         Route::post('/orders/{order}/proof', [GrowthController::class, 'submitProof'])->name('orders.proof');
+        
+        // Contact seller
+        Route::post('/contact', [GrowthController::class, 'contact'])->name('contact');
     });
     
     // Type filter - MUST be after /create route

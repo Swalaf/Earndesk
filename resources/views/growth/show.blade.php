@@ -89,6 +89,19 @@
                         </div>
                     @endif
                     
+                    <!-- Contact Seller Button -->
+                    @auth
+                        <button onclick="showContactModal()" class="mt-3 w-full py-3 border-2 border-indigo-500/30 text-indigo-400 font-medium rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-500/10 transition-colors">
+                            <i class="fas fa-comment-dots"></i>
+                            Contact Seller
+                        </button>
+                    @else
+                        <a href="{{ route('login') }}" class="mt-3 w-full py-3 border-2 border-indigo-500/30 text-indigo-400 font-medium rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-500/10 transition-colors">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login to Contact
+                        </a>
+                    @endauth
+                    
                     <div class="mt-6 pt-6 border-t border-dark-700">
                         <div class="flex items-center gap-2 text-sm text-gray-400 mb-3">
                             <i class="fas fa-shield-alt text-green-400"></i>
@@ -104,6 +117,59 @@
         </div>
     </div>
 </div>
+
+<!-- Contact Seller Modal -->
+@auth
+<div id="contact-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-dark-900 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-dark-700">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-t-3xl">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-white">Contact Seller</h2>
+                <button onclick="hideContactModal()" class="text-white/80 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <p class="text-indigo-200 mt-1">Send a message to {{ $listing->user->name ?? 'the seller' }}</p>
+        </div>
+
+        <!-- Modal Body -->
+        <form id="contact-form" class="p-6 space-y-6">
+            @csrf
+            <input type="hidden" name="recipient_id" value="{{ $listing->user_id }}">
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                    Subject
+                </label>
+                <input type="text" name="subject" 
+                       class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                       placeholder="What's this about?" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                    Message
+                </label>
+                <textarea name="message" rows="5" 
+                          class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                          placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="hideContactModal()" 
+                        class="flex-1 py-3 bg-dark-700 text-gray-300 rounded-xl font-medium hover:bg-dark-600 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30">
+                    <i class="fas fa-paper-plane mr-2"></i>Send
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 <script>
 async function createOrder() {
@@ -137,5 +203,60 @@ async function createOrder() {
         alert('An error occurred. Please try again.');
     }
 }
+
+// Contact Seller Modal Functions
+@if(auth()->check())
+function showContactModal() {
+    document.getElementById('contact-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideContactModal() {
+    document.getElementById('contact-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// Handle contact form submission
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('{{ route("growth.contact") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) {
+            hideContactModal();
+            document.getElementById('contact-form').reset();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+});
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideContactModal();
+    }
+});
+
+// Close modal on backdrop click
+document.getElementById('contact-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideContactModal();
+    }
+});
+@endif
 </script>
 @endsection

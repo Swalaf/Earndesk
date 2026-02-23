@@ -182,10 +182,17 @@
                             @endif
 
                             <!-- Contact Seller -->
-                            <a href="#" class="mt-3 w-full py-3 border-2 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-medium rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">
-                                <i class="fas fa-comment-dots"></i>
-                                Contact Seller
-                            </a>
+                            @auth
+                                <button onclick="showContactModal()" class="mt-3 w-full py-3 border-2 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-medium rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">
+                                    <i class="fas fa-comment-dots"></i>
+                                    Contact Seller
+                                </button>
+                            @else
+                                <a href="{{ route('login') }}" class="mt-3 w-full py-3 border-2 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-medium rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Login to Contact
+                                </a>
+                            @endauth
                         </div>
                     </div>
 
@@ -235,6 +242,7 @@
 
         <!-- Modal Body -->
         <form id="order-form" class="p-6 space-y-6">
+            @csrf
             <!-- Requirements -->
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -301,6 +309,59 @@
 </div>
 @endif
 
+<!-- Contact Seller Modal -->
+@auth
+<div id="contact-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-dark-900 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-t-3xl">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-white">Contact Seller</h2>
+                <button onclick="hideContactModal()" class="text-white/80 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <p class="text-indigo-200 mt-1">Send a message to {{ $service->seller->name ?? 'the seller' }}</p>
+        </div>
+
+        <!-- Modal Body -->
+        <form id="contact-form" class="p-6 space-y-6">
+            @csrf
+            <input type="hidden" name="recipient_id" value="{{ $service->user_id }}">
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Subject
+                </label>
+                <input type="text" name="subject" 
+                       class="w-full px-4 py-3 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                       placeholder="What's this about?" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Message
+                </label>
+                <textarea name="message" rows="5" 
+                          class="w-full px-4 py-3 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                          placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="hideContactModal()" 
+                        class="flex-1 py-3 bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-dark-600 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30">
+                    <i class="fas fa-paper-plane mr-2"></i>Send
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
 @push('scripts')
 <script>
     function showOrderModal() {
@@ -312,6 +373,18 @@
         document.getElementById('order-modal').classList.add('hidden');
         document.body.style.overflow = '';
     }
+
+    @auth
+    function showContactModal() {
+        document.getElementById('contact-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideContactModal() {
+        document.getElementById('contact-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    @endauth
 
     // Calculate add-ons total
     const addonCheckboxes = document.querySelectorAll('.addon-checkbox');
@@ -333,7 +406,7 @@
         document.getElementById('order-total').textContent = '₦' + (basePrice + addonsTotal).toLocaleString();
     }
 
-    // Handle form submission
+    // Handle order form submission
     document.getElementById('order-form').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -353,7 +426,9 @@
                 window.location.href = data.redirect;
             } else if (data.message) {
                 alert(data.message);
-                hideOrderModal();
+                if (data.success) {
+                    hideOrderModal();
+                }
             }
         })
         .catch(error => {
@@ -362,19 +437,60 @@
         });
     });
 
+    // Handle contact form submission
+    @auth
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('{{ route("professional-services.contact") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                hideContactModal();
+                document.getElementById('contact-form').reset();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+    @endauth
+
     // Close modal on escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             hideOrderModal();
+            @auth
+            hideContactModal();
+            @endauth
         }
     });
 
     // Close modal on backdrop click
-    document.getElementById('order-modal').addEventListener('click', function(e) {
+    document.getElementById('order-modal')?.addEventListener('click', function(e) {
         if (e.target === this) {
             hideOrderModal();
         }
     });
+    
+    @auth
+    document.getElementById('contact-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideContactModal();
+        }
+    });
+    @endauth
 </script>
 @endpush
 @endsection

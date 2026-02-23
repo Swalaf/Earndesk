@@ -49,6 +49,13 @@ class TaskRepository
             $data['is_featured'] = $data['is_featured'] ?? false;
             $data['is_sample'] = $data['is_sample'] ?? false;
             $data['completed_count'] = 0;
+            
+            // Set default values for nullable fields that have NOT NULL constraints
+            $data['min_followers'] = $data['min_followers'] ?? 0;
+            $data['min_account_age_days'] = $data['min_account_age_days'] ?? 0;
+            $data['min_level'] = $data['min_level'] ?? 1;
+            $data['max_submissions_per_user'] = $data['max_submissions_per_user'] ?? 1;
+            $data['proof_instructions'] = $data['proof_instructions'] ?? '';
 
             return Task::create($data);
         });
