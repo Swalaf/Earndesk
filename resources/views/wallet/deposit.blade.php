@@ -63,7 +63,7 @@
                                 <span class="text-gray-500 dark:text-gray-400 text-lg font-medium">₦</span>
                             </div>
                             <input type="number" name="amount" id="amount" min="100" step="1"
-                                class="block w-full pl-10 pr-4 py-4 text-lg bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                class="block w-full pl-12 pr-4 py-4 text-lg bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 placeholder="Enter amount" 
                                 value="{{ session('insufficient_balance_required') ? session('insufficient_balance_required') : old('amount', 0) }}"
                                 required>
